@@ -97,7 +97,11 @@ function FissionReactor:scram(reason)
     self.emergency = true
 
     if not alarmPlayed then
-        alarm()
+        parallel.waitForAny(
+            function()
+                alarm()
+            end,
+        )
         alarmPlayed = true
     end
 
