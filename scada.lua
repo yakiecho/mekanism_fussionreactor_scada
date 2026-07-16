@@ -10,23 +10,20 @@ local monitor = peripheral.wrap(
     config.monitor
 )
 
-if not config.monitor then
-
-    config.monitor = peripheral.getName(
-        peripheral.find("monitor")
+if config.monitor then
+    monitor = peripheral.wrap(
+        config.monitor
     )
-
 end
 
-if monitor then
-
-    term.redirect(monitor)
-
-    monitor.setTextScale(1)
-
+if not monitor then
+    monitor = peripheral.find(
+        "monitor"
+    )
 end
 
-local mw, mh = monitor.getSize()
+term.redirect(monitor)
+monitor.setTextScale(1)
 
 local function progress(value, width)
 
