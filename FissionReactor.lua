@@ -95,18 +95,16 @@ function FissionReactor:scram(reason)
     end
 
     self.emergency = true
+    self.alarm = reason or "Unknown"
 
     if not alarmPlayed then
         parallel.waitForAny(
             function()
                 alarm()
-            end,
+            end
         )
         alarmPlayed = true
     end
-
-    self.alarm = reason or "Unknown"
-
 end
 
 
@@ -293,8 +291,6 @@ function FissionReactor:safetyCheck(data)
         return false
 
     end
-
-    self:resetAlarm()
 
     return true
 

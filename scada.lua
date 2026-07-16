@@ -1,8 +1,5 @@
-local ReactorClass = require("FissionReactor")
-
-local reactor = ReactorClass:new(
-    "fissionReactorLogicAdapter_0"
-)
+local ReactorClass = require("FissionReactor") 
+local reactor = ReactorClass:new( "fissionReactorLogicAdapter_0" )
 
 
 reactor:setLimits({
