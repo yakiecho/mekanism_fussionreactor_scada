@@ -113,7 +113,7 @@ end
 
 
 function FissionReactor:resetAlarm()
-
+    
     self.emergency = false
 
     alarmPlayed = false
@@ -357,6 +357,10 @@ function FissionReactor:safetyCheck(data)
 
         return false
 
+    end
+
+    if tostring(self.device.getStatus()) == "true" then
+        self:resetAlarm()
     end
 
     return true

@@ -26,6 +26,8 @@ if monitor then
 
 end
 
+local mw, mh = monitor.getSize()
+
 local function progress(value, width)
 
     local filled = math.floor(value * width)
@@ -43,6 +45,91 @@ local function progress(value, width)
     end
 
     term.setBackgroundColor(colors.black)
+
+end
+
+
+local buttons = {}
+
+
+local function drawButton(x, y, w, text, color, enabled)
+
+    term.setCursorPos(x,y)
+
+    term.setBackgroundColor(color)
+
+    write(
+        string.rep(" ", w)
+    )
+
+
+    term.setCursorPos(
+        x + 1,
+        y
+    )
+
+
+    if enabled then
+        term.setTextColor(colors.white)
+    else
+        term.setTextColor(colors.lightGray)
+    end
+
+
+    write(text)
+
+
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+
+
+
+    buttons[#buttons+1] = {
+
+        x = x,
+        y = y,
+        w = w,
+        h = 1,
+
+        action = text,
+
+        enabled = enabled
+
+    }
+
+end
+
+
+local function touchHandler()
+
+    while true do
+
+        local event, side, x, y =
+            os.pullEvent("monitor_touch")
+
+        for _,button in ipairs(buttons) do
+
+            if button.enabled
+            and x >= button.x
+            and x <= button.x + button.w
+            and y == button.y then
+
+                if button.action == "START" then
+
+                    reactor:start()
+
+
+                elseif button.action == "UNLOCK" then
+
+                    reactor:resetAlarm()
+
+                end
+
+            end
+
+        end
+
+    end
 
 end
 
@@ -70,63 +157,122 @@ local function drawStatus(data)
 
 end
 
-while true do
 
-    local data = reactor:getData()
 
-    reactor:safetyCheck(data)
+local function scadaLoop()
+    while true do
+        buttons = {}
+        if reactor.emergency then
 
-    term.clear()
-    term.setCursorPos(1,1)
+            drawButton(
+                2,
+                mh - 2,
+                10,
+                "START",
+                colors.gray,
+                false
+            )
 
-    print("========== FISSION SCADA ==========")
 
-    drawStatus(data)
+            drawButton(
+                15,
+                mh - 2,
+                10,
+                "UNLOCK",
+                colors.red,
+                true
+            )
 
-    print()
 
-    print(string.format("Temperature : %7.1f C", data.temperature))
-    print(string.format("Damage      : %7.2f %%", data.damage))
-    print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
+        else
 
-    print()
 
-    print("Fuel")
-    progress(data.fuelPercent, 30)
-    print((" %5.1f%%"):format(data.fuelPercent * 100))
+            drawButton(
+                2,
+                mh - 2,
+                10,
+                "START",
+                colors.green,
+                true
+            )
 
-    print("Waste")
-    progress(data.wastePercent, 30)
-    print((" %5.1f%%"):format(data.wastePercent * 100))
 
-    print("Coolant")
-    progress(data.coolantPercent, 30)
-    print((" %5.1f%%"):format(data.coolantPercent * 100))
+            drawButton(
+                15,
+                mh - 2,
+                10,
+                "UNLOCK",
+                colors.gray,
+                false
+            )
 
-    print("Steam")
-    progress(data.heatedCoolantPercent, 30)
-    print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
 
-    print()
+        end
 
-    print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
-    print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
-    print(string.format("Size            : %dx%dx%d",
-        infoData.length,
-        infoData.width,
-        infoData.height))
+        local data = reactor:getData()
 
-    if reactor.emergency then
+        reactor:safetyCheck(data)
+
+        term.clear()
+        term.setCursorPos(1,1)
+
+        print("========== FISSION SCADA ==========")
+
+        drawStatus(data)
 
         print()
 
-        term.setTextColor(colors.red)
+        print(string.format("Temperature : %7.1f C", data.temperature))
+        print(string.format("Damage      : %7.2f %%", data.damage))
+        print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
 
-        print("EMERGENCY")
-        print(reactor.alarm)
+        print()
 
-        term.setTextColor(colors.white)
+        print("Fuel")
+        progress(data.fuelPercent, 30)
+        print((" %5.1f%%"):format(data.fuelPercent * 100))
+
+        print("Waste")
+        progress(data.wastePercent, 30)
+        print((" %5.1f%%"):format(data.wastePercent * 100))
+
+        print("Coolant")
+        progress(data.coolantPercent, 30)
+        print((" %5.1f%%"):format(data.coolantPercent * 100))
+
+        print("Steam")
+        progress(data.heatedCoolantPercent, 30)
+        print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
+
+        print()
+
+        print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
+        print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
+        print(string.format("Size            : %dx%dx%d",
+            infoData.length,
+            infoData.width,
+            infoData.height))
+
+        if reactor.emergency then
+
+            print()
+
+            term.setTextColor(colors.red)
+
+            print("EMERGENCY")
+            print(reactor.alarm)
+
+            term.setTextColor(colors.white)
+
+        end
 
     end
-
 end
+
+parallel.waitForAny(
+
+    scadaLoop,
+
+    touchHandler
+
+)
