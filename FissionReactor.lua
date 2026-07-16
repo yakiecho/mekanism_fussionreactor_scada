@@ -76,7 +76,7 @@ function FissionReactor:start()
         return false, "Emergency lock"
     end
 
-    if not tostring(self.device.getStatus()) == "true" then
+    if not (tostring(self.device.getStatus()) == "true") then
         self.device.activate()
     end
     

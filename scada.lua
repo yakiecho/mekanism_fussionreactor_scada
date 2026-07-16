@@ -126,7 +126,6 @@ local function touchHandler()
 
                     reactor:stop()
 
-
                 elseif button.action == "+" then
 
                     reactor:changeBurnRate(burnStep)
@@ -234,7 +233,7 @@ local function scadaLoop()
                     10,
                     "STOP",
                     colors.red,
-                    false
+                    true
                 )
             else
                 drawButton(
@@ -243,7 +242,7 @@ local function scadaLoop()
                     10,
                     "START",
                     colors.green,
-                    false
+                    true
                 )
             end
 
