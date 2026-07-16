@@ -6,14 +6,14 @@ local dfpwm = require("cc.audio.dfpwm")
 local decoder = dfpwm.make_decoder()
 local alarmPlayed = false
 
-function FissionReactor:new(name)
+function FissionReactor:new(config)
 
     local obj = {}
 
     setmetatable(obj, FissionReactor)
 
 
-    obj.name = name or "fissionReactorLogicAdapter_0"
+    obj.name = config.reactor
 
     obj.device = peripheral.wrap(obj.name)
 
