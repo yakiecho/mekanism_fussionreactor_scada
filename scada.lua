@@ -1,18 +1,24 @@
 local ReactorClass = require("FissionReactor") 
-local reactor = ReactorClass:new("fissionReactorLogicAdapter_0")
+local config = require("config")
+
+local reactor = ReactorClass:new(
+    config.reactor
+)
 local infoData = reactor:getInfoData()
 
-reactor:setLimits({
 
-    maxTemperature = 950,
+local monitor = peripheral.wrap(
+    config.monitor
+)
 
-    minFuel = 0.10,
 
-    minCoolant = 0.20,
+if monitor then
 
-    maxWaste = 0.90
+    term.redirect(monitor)
 
-})
+    monitor.setTextScale(1)
+
+end
 
 
 local function progress(value, width)

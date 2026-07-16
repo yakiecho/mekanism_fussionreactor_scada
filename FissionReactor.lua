@@ -27,16 +27,15 @@ function FissionReactor:new(name)
 
     obj.config = {
 
-        maxTemperature = 1000,
+        maxTemperature = config.maxTemperature,
 
-        maxDamage = 0,
+        minFuel = config.minFuel,
 
-        minFuel = 0.05,
+        minCoolant = config.minCoolant,
 
-        minCoolant = 0.10,
+        maxWaste = config.maxWaste,
 
-        maxWaste = 0.95
-
+        maxDamage = config.maxDamage
     }
 
 
