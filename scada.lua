@@ -64,9 +64,9 @@ end
 
 while true do
 
-    reactor:safetyCheck()
-
     local data = reactor:getData()
+
+    reactor:safetyCheck(data)
 
     term.clear()
     term.setCursorPos(1,1)

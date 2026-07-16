@@ -56,12 +56,14 @@ local function alarm()
         return
     end
 
-    for chunk in io.lines("alarm.dfpwm", 16 * 1024) do
-       local buffer = decoder(chunk)
+    for i = 1, 5 do
+        for chunk in io.lines("SCADA/alarm.dfpwm", 16 * 1024) do
+           local buffer = decoder(chunk)
 
-       while not speaker.playAudio(buffer) do
-           os.pullEvent("speaker_audio_empty")
-       end
+           while not speaker.playAudio(buffer) do
+               os.pullEvent("speaker_audio_empty")
+           end
+    end
 end
 
 end
@@ -227,11 +229,7 @@ end
 -------------------------------------------------
 
 
-function FissionReactor:safetyCheck()
-
-
-    local data = self:getData()
-
+function FissionReactor:safetyCheck(data)
 
 
     if data.temperature >= self.config.maxTemperature then
@@ -292,7 +290,7 @@ function FissionReactor:safetyCheck()
 
     end
 
-
+    self:resetAlarm()
 
     return true
 
