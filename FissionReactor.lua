@@ -185,7 +185,7 @@ function FissionReactor:getData()
 
     return {
 
-        status = self.device.getStatus(),
+        status = tostring(self.device.getStatus()),
 
         temperature =
             self.device.getTemperature() - 273.15,

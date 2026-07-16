@@ -167,6 +167,7 @@ end
 
 local function scadaLoop()
     while true do
+        local data = reactor:getData()
         buttons = {}
         if reactor.emergency then
 
@@ -226,7 +227,7 @@ local function scadaLoop()
                 true
             )
 
-            if tostring(reactor.status) == "true" then
+            if data.status == "true" then
                 drawButton(
                     2,
                     mh - 2,
@@ -257,8 +258,6 @@ local function scadaLoop()
 
 
         end
-
-        local data = reactor:getData()
 
         reactor:safetyCheck(data)
 
