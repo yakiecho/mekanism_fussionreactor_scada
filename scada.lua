@@ -106,14 +106,13 @@ local function touchHandler()
         for _,button in ipairs(buttons) do
 
             if button.enabled
-            and x >= button.x
-            and x <= button.x + button.w
-            and y == button.y then
+                and x >= button.x
+                and x <= button.x + button.w
+                and y == button.y then
 
                 if button.action == "START" then
 
                     reactor:start()
-
 
                 elseif button.action == "UNLOCK" then
 
@@ -121,16 +120,15 @@ local function touchHandler()
 
                 elseif button.action == "-" then
 
-                    changeBurnRate(
-                        -burnStep
-                    )
+                    reactor:changeBurnRate(-burnStep)
 
 
                 elseif button.action == "+" then
 
-                    changeBurnRate(
+                    reactor:changeBurnRate(
                         burnStep
                     )
+                end
 
             end
 
@@ -172,8 +170,8 @@ local function scadaLoop()
         if reactor.emergency then
 
             drawButton(
-                2,
-                mh - 5,
+                20,
+                mh - 15,
                 5,
                 "-",
                 colors.gray,
@@ -181,8 +179,8 @@ local function scadaLoop()
             )
 
             drawButton(
-                17,
-                mh - 5,
+                22,
+                mh - 15,
                 5,
                 "+",
                 colors.gray,
@@ -211,8 +209,8 @@ local function scadaLoop()
 
         else
             drawButton(
-                2,
-                mh - 5,
+                22,
+                mh - 15,
                 5,
                 "-",
                 colors.red,
@@ -220,8 +218,8 @@ local function scadaLoop()
             )
 
             drawButton(
-                17,
-                mh - 5,
+                22,
+                mh - 15,
                 5,
                 "+",
                 colors.green,
