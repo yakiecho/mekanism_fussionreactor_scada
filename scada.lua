@@ -78,7 +78,7 @@ while true do
 
     print()
 
-    print(string.format("Temperature : %7.1f K", data.temperature))
+    print(string.format("Temperature : %7.1f C", data.temperature))
     print(string.format("Damage      : %7.2f %%", data.damage))
     print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
     print(string.format("Heating     : %7.1f", data.heatingRate))
@@ -87,20 +87,20 @@ while true do
     print()
 
     print("Fuel")
-    print(progress(data.fuelPercent,30),
-          string.format("%5.1f%%",data.fuelPercent*100))
+    progress(data.fuelPercent, 30)
+    print((" %5.1f%%"):format(data.fuelPercent * 100))
 
     print("Waste")
-    print(progress(data.wastePercent,30),
-          string.format("%5.1f%%",data.wastePercent*100))
+    progress(data.wastePercent, 30)
+    print((" %5.1f%%"):format(data.wastePercent * 100))
 
     print("Coolant")
-    print(progress(data.coolantPercent,30),
-          string.format("%5.1f%%",data.coolantPercent*100))
+    progress(data.coolantPercent, 30)
+    print((" %5.1f%%"):format(data.coolantPercent * 100))
 
     print("Steam")
-    print(progress(data.heatedCoolantPercent,30),
-          string.format("%5.1f%%",data.heatedCoolantPercent*100))
+    progress(data.heatedCoolantPercent, 30)
+    print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
 
     print()
 
