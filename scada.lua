@@ -11,6 +11,13 @@ local monitor = peripheral.wrap(
     config.monitor
 )
 
+if not config.monitor then
+
+    config.monitor = peripheral.getName(
+        peripheral.find("monitor")
+    )
+
+end
 
 if monitor then
 
@@ -19,7 +26,6 @@ if monitor then
     monitor.setTextScale(1)
 
 end
-
 
 local function progress(value, width)
 

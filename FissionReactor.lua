@@ -1,7 +1,7 @@
 FissionReactor = {}
 
 FissionReactor.__index = FissionReactor
-
+local config = require("config")
 local speaker = peripheral.find("speaker")
 local dfpwm = require("cc.audio.dfpwm")
 local decoder = dfpwm.make_decoder()

@@ -1,3 +1,5 @@
+local config = require("config")  
+
 local USER = "yakiecho"
 local REPO = "mekanism_fussionreactor_scada"
 
@@ -227,5 +229,6 @@ local function update()
 end
 
 
-
-update()
+if config.update then 
+    update()
+end
