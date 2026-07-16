@@ -1,9 +1,8 @@
 local ReactorClass = require("FissionReactor") 
 local config = require("config")
 
-local reactor = ReactorClass:new(
-    config.reactor
-)
+local reactor = ReactorClass:new(config)
+
 local infoData = reactor:getInfoData()
 
 
