@@ -122,7 +122,7 @@ function FissionReactor:getData()
         -- Reactor
         -------------------------------------------------
 
-        temperature = self.device.getTemperature(),
+        temperature = self.device.getTemperature() - 273.15,
         damage = self.device.getDamagePercent(),
         heatCapacity = self.device.getHeatCapacity(),
         heatingRate = self.device.getHeatingRate(),

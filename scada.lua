@@ -23,8 +23,19 @@ local function progress(value, width)
 
     local filled = math.floor(value * width)
 
-    return string.rep("=", filled) ..
-           string.rep("-", width - filled)
+    for i = 1, width do
+
+        if i <= filled then
+            term.setBackgroundColor(colors.green)
+        else
+            term.setBackgroundColor(colors.gray)
+        end
+
+        write(" ")
+
+    end
+
+    term.setBackgroundColor(colors.black)
 
 end
 
