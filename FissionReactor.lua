@@ -56,8 +56,8 @@ local function alarm()
         return
     end
 
-    for i = 1, 5 do
-        for chunk in io.lines("SCADA/alarm.dfpwm", 16 * 1024) do
+    for i = 1, 4 do
+        for chunk in io.lines("SCADA/alarm2.dfpwm", 16 * 1024) do
            local buffer = decoder(chunk)
 
            while not speaker.playAudio(buffer) do
@@ -97,16 +97,16 @@ function FissionReactor:scram(reason)
     self.emergency = true
     self.alarm = reason or "Unknown"
 
-    if not alarmPlayed then
-        parallel.waitForAny(
-            function()
+    parallel.waitForAny(
+        function()
+            if not alarmPlayed then
                 alarm()
+                alarmPlayed = true
             end
-        )
-        alarmPlayed = true
-    end
+            
+        end
+    )
 end
-
 
 
 function FissionReactor:resetAlarm()
@@ -152,20 +152,11 @@ function FissionReactor:getData()
         damage =
             self.device.getDamagePercent(),
 
-
         actualBurnRate =
             self.device.getActualBurnRate(),
 
         maxBurnRate =
             self.device.getMaxBurnRate(),
-
-
-        heatingRate =
-            self.device.getHeatingRate(),
-
-        environmentalLoss =
-            self.device.getEnvironmentalLoss(),
-
 
         fuelPercent =
             self.device.getFuelFilledPercentage(),

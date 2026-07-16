@@ -77,8 +77,6 @@ while true do
     print(string.format("Temperature : %7.1f C", data.temperature))
     print(string.format("Damage      : %7.2f %%", data.damage))
     print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
-    print(string.format("Heating     : %7.1f", data.heatingRate))
-    print(string.format("Heat Loss   : %7.1f", data.environmentalLoss))
 
     print()
 
