@@ -315,6 +315,8 @@ local function scadaLoop()
             )
         end
 
+        sleep(config.refreshRate)
+
     end
 end
 
