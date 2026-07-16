@@ -168,8 +168,65 @@ end
 local function scadaLoop()
     while true do
 
-        buttons = {}
+        
         local data = reactor:getData()
+        
+        reactor:safetyCheck(data)
+
+        term.clear()
+        term.setCursorPos(1,1)
+
+        print("========== FISSION SCADA ==========")
+
+        drawStatus(data)
+
+        print()
+
+        print(string.format("Temperature : %7.1f C", data.temperature))
+        print(string.format("Damage      : %7.2f %%", data.damage))
+        print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
+
+        print()
+
+        print("Fuel")
+        progress(data.fuelPercent, 30)
+        print((" %5.1f%%"):format(data.fuelPercent * 100))
+
+        print("Waste")
+        progress(data.wastePercent, 30)
+        print((" %5.1f%%"):format(data.wastePercent * 100))
+
+        print("Coolant")
+        progress(data.coolantPercent, 30)
+        print((" %5.1f%%"):format(data.coolantPercent * 100))
+
+        print("Steam")
+        progress(data.heatedCoolantPercent, 30)
+        print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
+
+        print()
+
+        print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
+        print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
+        print(string.format("Size            : %dx%dx%d",
+            infoData.length,
+            infoData.width,
+            infoData.height))
+
+        if reactor.emergency then
+
+            print()
+
+            term.setTextColor(colors.red)
+
+            print("EMERGENCY")
+            print(reactor.alarm)
+
+            term.setTextColor(colors.white)
+
+        end
+
+        buttons = {}
         if reactor.emergency then
 
             drawButton(
@@ -256,61 +313,6 @@ local function scadaLoop()
                 colors.gray,
                 false
             )
-        end
-        
-        reactor:safetyCheck(data)
-
-        term.clear()
-        term.setCursorPos(1,1)
-
-        print("========== FISSION SCADA ==========")
-
-        drawStatus(data)
-
-        print()
-
-        print(string.format("Temperature : %7.1f C", data.temperature))
-        print(string.format("Damage      : %7.2f %%", data.damage))
-        print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
-
-        print()
-
-        print("Fuel")
-        progress(data.fuelPercent, 30)
-        print((" %5.1f%%"):format(data.fuelPercent * 100))
-
-        print("Waste")
-        progress(data.wastePercent, 30)
-        print((" %5.1f%%"):format(data.wastePercent * 100))
-
-        print("Coolant")
-        progress(data.coolantPercent, 30)
-        print((" %5.1f%%"):format(data.coolantPercent * 100))
-
-        print("Steam")
-        progress(data.heatedCoolantPercent, 30)
-        print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
-
-        print()
-
-        print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
-        print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
-        print(string.format("Size            : %dx%dx%d",
-            infoData.length,
-            infoData.width,
-            infoData.height))
-
-        if reactor.emergency then
-
-            print()
-
-            term.setTextColor(colors.red)
-
-            print("EMERGENCY")
-            print(reactor.alarm)
-
-            term.setTextColor(colors.white)
-
         end
 
     end
