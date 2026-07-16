@@ -76,12 +76,23 @@ function FissionReactor:start()
         return false, "Emergency lock"
     end
 
-    self.device.activate()
-
+    if not tostring(self.device.getStatus()) == "true" then
+        self.device.activate()
+    end
+    
     return true
 
 end
 
+function FissionReactor:stop()
+
+    if tostring(self.device.getStatus()) == "true" then
+        self.device.scram()
+    end
+
+    return true
+
+end
 
 
 function FissionReactor:scram(reason)
