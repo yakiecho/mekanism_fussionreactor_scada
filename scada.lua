@@ -1,6 +1,5 @@
 local ReactorClass = require("FissionReactor")
 
-
 local reactor = ReactorClass:new(
     "fissionReactorLogicAdapter_0"
 )
@@ -47,7 +46,7 @@ local function drawStatus(data)
         term.setTextColor(colors.red)
         print("STATUS : SCRAM")
 
-    elseif data.status == "active" then
+    elseif tostring(data.status) == "true" then
 
         term.setTextColor(colors.lime)
         print("STATUS : ONLINE")

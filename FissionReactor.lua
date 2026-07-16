@@ -2,6 +2,8 @@ FissionReactor = {}
 
 FissionReactor.__index = FissionReactor
 
+local speaker = peripheral.find("speaker")
+local alarmPlayed = false
 
 function FissionReactor:new(name)
 
@@ -45,6 +47,24 @@ function FissionReactor:new(name)
 end
 
 
+local function alarm()
+
+    if not speaker then
+        return
+    end
+
+    for i = 1, 4 do
+
+        speaker.playNote("saw", 3, 24)
+        sleep(0.15)
+
+        speaker.playNote("saw", 3, 12)
+        sleep(0.15)
+
+    end
+
+end
+
 
 -------------------------------------------------
 -- Управление
@@ -71,6 +91,11 @@ function FissionReactor:scram(reason)
 
     self.emergency = true
 
+    if not alarmPlayed then
+        alarm()
+        alarmPlayed = true
+    end
+
     self.alarm = reason or "Unknown"
 
 end
@@ -80,6 +105,8 @@ end
 function FissionReactor:resetAlarm()
 
     self.emergency = false
+
+    alarmPlayed = false
 
     self.alarm = nil
 
