@@ -228,7 +228,7 @@ function FissionReactor:safetyCheck()
 
 
 
-    if data.fuel <= self.config.minFuel then
+    if data.fuelPercent  <= self.config.minFuel then
 
         self:scram(
             "LOW FUEL"
@@ -240,7 +240,7 @@ function FissionReactor:safetyCheck()
 
 
 
-    if data.coolant <= self.config.minCoolant then
+    if data.coolantPercent  <= self.config.minCoolant then
 
         self:scram(
             "LOW COOLANT"
@@ -252,7 +252,7 @@ function FissionReactor:safetyCheck()
 
 
 
-    if data.waste >= self.config.maxWaste then
+    if data.wastePercent  >= self.config.maxWaste then
 
         self:scram(
             "WASTE FULL"
