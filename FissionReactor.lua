@@ -7,7 +7,6 @@ local dfpwm = require("cc.audio.dfpwm")
 local decoder = dfpwm.make_decoder()
 
 local alarmPlayed = false
-local alarmRunning = false
 
 function FissionReactor:new(name)
 
