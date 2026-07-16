@@ -53,15 +53,7 @@ local function alarm()
         return
     end
 
-    for i = 1, 4 do
-
-        speaker.playNote("saw", 3, 24)
-        sleep(0.15)
-
-        speaker.playNote("saw", 3, 12)
-        sleep(0.15)
-
-    end
+    speaker.playAudio("alarm.dfpwm")
 
 end
 
@@ -87,7 +79,9 @@ end
 
 function FissionReactor:scram(reason)
 
-    self.device.scram()
+    if tostring(self.device.status) == "true" then
+        self.device.scram()
+    end
 
     self.emergency = true
 
