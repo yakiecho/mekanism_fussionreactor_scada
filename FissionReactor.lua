@@ -3,6 +3,9 @@ FissionReactor = {}
 FissionReactor.__index = FissionReactor
 
 local speaker = peripheral.find("speaker")
+local dfpwm = require("cc.audio.dfpwm")
+local decoder = dfpwm.make_decoder()
+
 local alarmPlayed = false
 
 function FissionReactor:new(name)
@@ -53,7 +56,13 @@ local function alarm()
         return
     end
 
-    speaker.playAudio("alarm.dfpwm")
+    for chunk in io.lines("alarm.dfpwm", 16 * 1024) do
+       local buffer = decoder(chunk)
+
+       while not speaker.playAudio(buffer) do
+           os.pullEvent("speaker_audio_empty")
+       end
+end
 
 end
 
