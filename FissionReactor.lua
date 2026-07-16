@@ -57,35 +57,15 @@ local function alarm()
         return
     end
 
-    alarmRunning = true
+    for i = 1, 4 do
+        for chunk in io.lines("SCADA/alarm2.dfpwm", 16 * 1024) do
+           local buffer = decoder(chunk)
 
-    while alarmRunning do
-
-        local file = fs.open("SCADA/alarm2.dfpwm", "rb")
-
-        if not file then
-            return
+           while not speaker.playAudio(buffer) do
+               os.pullEvent("speaker_audio_empty")
+           end
         end
-
-
-        while alarmRunning do
-
-            local chunk = file.read(16 * 1024)
-
-            if not chunk then
-                break
-            end
-
-            while not speaker.playAudio(buffer) do
-                os.pullEvent("speaker_audio_empty")
-            end
-
-        end
-
-        file.close()
-
     end
-
 end
 
 
