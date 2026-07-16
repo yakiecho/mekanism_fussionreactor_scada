@@ -125,9 +125,7 @@ local function touchHandler()
 
                 elseif button.action == "+" then
 
-                    reactor:changeBurnRate(
-                        burnStep
-                    )
+                    reactor:changeBurnRate(burnStep)
                 end
 
             end
@@ -170,8 +168,8 @@ local function scadaLoop()
         if reactor.emergency then
 
             drawButton(
-                20,
-                mh - 15,
+                30,
+                6,
                 5,
                 "-",
                 colors.gray,
@@ -179,8 +177,8 @@ local function scadaLoop()
             )
 
             drawButton(
-                22,
-                mh - 15,
+                36,
+                6,
                 5,
                 "+",
                 colors.gray,
@@ -209,8 +207,8 @@ local function scadaLoop()
 
         else
             drawButton(
-                22,
-                mh - 15,
+                30,
+                6,
                 5,
                 "-",
                 colors.red,
@@ -218,8 +216,8 @@ local function scadaLoop()
             )
 
             drawButton(
-                22,
-                mh - 15,
+                36,
+                6,
                 5,
                 "+",
                 colors.green,
