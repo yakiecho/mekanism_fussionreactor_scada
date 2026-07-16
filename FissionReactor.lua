@@ -88,16 +88,15 @@ end
 
 function FissionReactor:scram(reason)
 
-    if tostring(self.device.status) == "true" then
+    if tostring(self.device.getStatus()) == "true" then
         self.device.scram()
+    end
 
-        self.emergency = true
+    self.emergency = true
 
-        if not alarmPlayed then
-            alarm()
-            alarmPlayed = true
-        end
-
+    if not alarmPlayed then
+        alarm()
+        alarmPlayed = true
     end
 
     self.alarm = reason or "Unknown"
