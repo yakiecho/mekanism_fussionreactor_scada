@@ -1,6 +1,6 @@
 local ReactorClass = require("FissionReactor") 
-local reactor = ReactorClass:new( "fissionReactorLogicAdapter_0" )
-
+local reactor = ReactorClass:new("fissionReactorLogicAdapter_0")
+local infoData = reactor:getInfoData()
 
 reactor:setLimits({
 
@@ -100,12 +100,12 @@ while true do
 
     print()
 
-    print(string.format("Fuel Assemblies : %d",data.fuelAssemblies))
-    print(string.format("Boil Efficiency : %.2f%%",data.boilEfficiency*100))
+    print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
+    print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
     print(string.format("Size            : %dx%dx%d",
-        data.length,
-        data.width,
-        data.height))
+        infoData.length,
+        infoData.width,
+        infoData.height))
 
     if reactor.emergency then
 

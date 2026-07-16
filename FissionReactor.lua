@@ -144,85 +144,158 @@ function FissionReactor:getData()
 
     return {
 
-        -------------------------------------------------
-        -- Status
-        -------------------------------------------------
-
         status = self.device.getStatus(),
-        formed = self.device.isFormed(),
-        forceDisabled = self.device.isForceDisabled(),
 
-        -------------------------------------------------
-        -- Reactor
-        -------------------------------------------------
+        temperature =
+            self.device.getTemperature() - 273.15,
 
-        temperature = self.device.getTemperature() - 273.15,
-        damage = self.device.getDamagePercent(),
-        heatCapacity = self.device.getHeatCapacity(),
-        heatingRate = self.device.getHeatingRate(),
-        environmentalLoss = self.device.getEnvironmentalLoss(),
+        damage =
+            self.device.getDamagePercent(),
 
-        -------------------------------------------------
-        -- Burn
-        -------------------------------------------------
 
-        burnRate = self.device.getBurnRate(),
-        actualBurnRate = self.device.getActualBurnRate(),
-        maxBurnRate = self.device.getMaxBurnRate(),
+        actualBurnRate =
+            self.device.getActualBurnRate(),
 
-        -------------------------------------------------
-        -- Fuel
-        -------------------------------------------------
+        maxBurnRate =
+            self.device.getMaxBurnRate(),
 
-        fuel = self.device.getFuel(),
-        fuelCapacity = self.device.getFuelCapacity(),
-        fuelNeeded = self.device.getFuelNeeded(),
-        fuelPercent = self.device.getFuelFilledPercentage(),
 
-        -------------------------------------------------
-        -- Waste
-        -------------------------------------------------
+        heatingRate =
+            self.device.getHeatingRate(),
 
-        waste = self.device.getWaste(),
-        wasteCapacity = self.device.getWasteCapacity(),
-        wasteNeeded = self.device.getWasteNeeded(),
-        wastePercent = self.device.getWasteFilledPercentage(),
+        environmentalLoss =
+            self.device.getEnvironmentalLoss(),
 
-        -------------------------------------------------
-        -- Coolant
-        -------------------------------------------------
 
-        coolant = self.device.getCoolant(),
-        coolantCapacity = self.device.getCoolantCapacity(),
-        coolantNeeded = self.device.getCoolantNeeded(),
-        coolantPercent = self.device.getCoolantFilledPercentage(),
+        fuelPercent =
+            self.device.getFuelFilledPercentage(),
 
-        -------------------------------------------------
-        -- Steam
-        -------------------------------------------------
+        wastePercent =
+            self.device.getWasteFilledPercentage(),
 
-        heatedCoolant = self.device.getHeatedCoolant(),
-        heatedCoolantCapacity = self.device.getHeatedCoolantCapacity(),
-        heatedCoolantNeeded = self.device.getHeatedCoolantNeeded(),
-        heatedCoolantPercent = self.device.getHeatedCoolantFilledPercentage(),
+        coolantPercent =
+            self.device.getCoolantFilledPercentage(),
 
-        -------------------------------------------------
-        -- Other
-        -------------------------------------------------
+        burnRate =
+            self.device.getBurnRate(),
 
-        boilEfficiency = self.device.getBoilEfficiency(),
-        fuelAssemblies = self.device.getFuelAssemblies(),
-
-        width = self.device.getWidth(),
-        length = self.device.getLength(),
-        height = self.device.getHeight(),
-
-        logicMode = self.device.getLogicMode(),
-        redstoneMode = self.device.getRedstoneMode()
+        heatedCoolantPercent =
+            self.device.getHeatedCoolantFilledPercentage()
 
     }
 
 end
+
+
+function FissionReactor:getInfoData()
+
+    return {
+
+        boilEfficiency =
+            self.device.getBoilEfficiency(),
+
+        fuelAssemblies =
+            self.device.getFuelAssemblies(),
+
+        width =
+            self.device.getWidth(),
+
+        length =
+            self.device.getLength(),
+
+        height =
+            self.device.getHeight(),
+
+    }
+
+end
+
+
+
+
+-- function FissionReactor:getData()
+
+--     return {
+
+--         -------------------------------------------------
+--         -- Status
+--         -------------------------------------------------
+
+--         status = self.device.getStatus(),
+--         formed = self.device.isFormed(),
+--         forceDisabled = self.device.isForceDisabled(),
+
+--         -------------------------------------------------
+--         -- Reactor
+--         -------------------------------------------------
+
+--         temperature = self.device.getTemperature() - 273.15,
+--         damage = self.device.getDamagePercent(),
+--         heatCapacity = self.device.getHeatCapacity(),
+--         heatingRate = self.device.getHeatingRate(),
+--         environmentalLoss = self.device.getEnvironmentalLoss(),
+
+--         -------------------------------------------------
+--         -- Burn
+--         -------------------------------------------------
+
+--         burnRate = self.device.getBurnRate(),
+--         actualBurnRate = self.device.getActualBurnRate(),
+--         maxBurnRate = self.device.getMaxBurnRate(),
+
+--         -------------------------------------------------
+--         -- Fuel
+--         -------------------------------------------------
+
+--         fuel = self.device.getFuel(),
+--         fuelCapacity = self.device.getFuelCapacity(),
+--         fuelNeeded = self.device.getFuelNeeded(),
+--         fuelPercent = self.device.getFuelFilledPercentage(),
+
+--         -------------------------------------------------
+--         -- Waste
+--         -------------------------------------------------
+
+--         waste = self.device.getWaste(),
+--         wasteCapacity = self.device.getWasteCapacity(),
+--         wasteNeeded = self.device.getWasteNeeded(),
+--         wastePercent = self.device.getWasteFilledPercentage(),
+
+--         -------------------------------------------------
+--         -- Coolant
+--         -------------------------------------------------
+
+--         coolant = self.device.getCoolant(),
+--         coolantCapacity = self.device.getCoolantCapacity(),
+--         coolantNeeded = self.device.getCoolantNeeded(),
+--         coolantPercent = self.device.getCoolantFilledPercentage(),
+
+--         -------------------------------------------------
+--         -- Steam
+--         -------------------------------------------------
+
+--         heatedCoolant = self.device.getHeatedCoolant(),
+--         heatedCoolantCapacity = self.device.getHeatedCoolantCapacity(),
+--         heatedCoolantNeeded = self.device.getHeatedCoolantNeeded(),
+--         heatedCoolantPercent = self.device.getHeatedCoolantFilledPercentage(),
+
+--         -------------------------------------------------
+--         -- Other
+--         -------------------------------------------------
+
+--         boilEfficiency = self.device.getBoilEfficiency(),
+--         fuelAssemblies = self.device.getFuelAssemblies(),
+
+--         width = self.device.getWidth(),
+--         length = self.device.getLength(),
+--         height = self.device.getHeight(),
+
+--         logicMode = self.device.getLogicMode(),
+--         redstoneMode = self.device.getRedstoneMode()
+
+--     }
+
+-- end
 
 
 
