@@ -113,7 +113,7 @@ end
 
 
 function FissionReactor:resetAlarm()
-    
+
     self.emergency = false
 
     alarmPlayed = false
@@ -122,6 +122,38 @@ function FissionReactor:resetAlarm()
 
 end
 
+
+local function changeBurnRate(value)
+
+    if reactor.emergency then
+        return
+    end
+
+
+    autoBurn = false
+
+
+    local data = reactor:getData()
+
+
+    local current = data.burnRate + value
+
+
+    if current < 0 then
+        current = 0
+    end
+
+
+    if current > data.maxBurnRate then
+        current = data.maxBurnRate
+    end
+
+
+    reactor:setBurnRate(
+        current
+    )
+
+end
 
 
 function FissionReactor:setBurnRate(rate)

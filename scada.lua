@@ -1,10 +1,8 @@
 local ReactorClass = require("FissionReactor") 
 local config = require("config")
-
 local reactor = ReactorClass:new(config)
-
 local infoData = reactor:getInfoData()
-
+local burnStep = 0.1
 
 local monitor = peripheral.wrap(
     config.monitor
@@ -24,6 +22,7 @@ end
 
 term.redirect(monitor)
 monitor.setTextScale(1)
+local mw, mh = monitor.getSize()
 
 local function progress(value, width)
 
@@ -120,7 +119,18 @@ local function touchHandler()
 
                     reactor:resetAlarm()
 
-                end
+                elseif button.action == "-" then
+
+                    changeBurnRate(
+                        -burnStep
+                    )
+
+
+                elseif button.action == "+" then
+
+                    changeBurnRate(
+                        burnStep
+                    )
 
             end
 
@@ -163,6 +173,24 @@ local function scadaLoop()
 
             drawButton(
                 2,
+                mh - 5,
+                5,
+                "-",
+                colors.gray,
+                false
+            )
+
+            drawButton(
+                17,
+                mh - 5,
+                5,
+                "+",
+                colors.gray,
+                false
+            )
+
+            drawButton(
+                2,
                 mh - 2,
                 10,
                 "START",
@@ -182,7 +210,23 @@ local function scadaLoop()
 
 
         else
+            drawButton(
+                2,
+                mh - 5,
+                5,
+                "-",
+                colors.red,
+                true
+            )
 
+            drawButton(
+                17,
+                mh - 5,
+                5,
+                "+",
+                colors.green,
+                true
+            )
 
             drawButton(
                 2,
