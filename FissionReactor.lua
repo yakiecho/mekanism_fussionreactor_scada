@@ -7,6 +7,7 @@ local dfpwm = require("cc.audio.dfpwm")
 local decoder = dfpwm.make_decoder()
 
 local alarmPlayed = false
+local alarmRunning = false
 
 function FissionReactor:new(name)
 
@@ -56,15 +57,34 @@ local function alarm()
         return
     end
 
-    for i = 1, 4 do
-        for chunk in io.lines("SCADA/alarm2.dfpwm", 16 * 1024) do
-           local buffer = decoder(chunk)
+    alarmRunning = true
 
-           while not speaker.playAudio(buffer) do
-               os.pullEvent("speaker_audio_empty")
-           end
+    while alarmRunning do
+
+        local file = fs.open("SCADA/alarm2.dfpwm", "rb")
+
+        if not file then
+            return
+        end
+
+
+        while alarmRunning do
+
+            local chunk = file.read(16 * 1024)
+
+            if not chunk then
+                break
+            end
+
+            while not speaker.playAudio(buffer) do
+                os.pullEvent("speaker_audio_empty")
+            end
+
+        end
+
+        file.close()
+
     end
-end
 
 end
 
@@ -97,15 +117,22 @@ function FissionReactor:scram(reason)
     self.emergency = true
     self.alarm = reason or "Unknown"
 
-    parallel.waitForAny(
-        function()
-            if not alarmPlayed then
+    if not alarmPlayed then
+
+        alarmPlayed = true
+
+        parallel.waitForAny(
+            function()
                 alarm()
-                alarmPlayed = true
+            end,
+
+            function()
+                os.sleep(0)
             end
-            
-        end
-    )
+        )
+
+    end
+    
 end
 
 
