@@ -124,32 +124,33 @@ local function touchHandler()
                 and x <= button.x + button.w
                 and y == button.y then
 
-                if button.action == "START" then
+                if not panelLocked then
+                    if button.action == "START" then
 
-                    reactor:start()
+                        reactor:start()
 
-                elseif button.action == "UNLOCK" then
+                    elseif button.action == "UNLOCK" then
 
-                    reactor:resetAlarm()
+                        reactor:resetAlarm()
 
-                elseif button.action == "-" then
+                    elseif button.action == "-" then
 
-                    reactor:changeBurnRate(-burnStep)
+                        reactor:changeBurnRate(-burnStep)
 
-                elseif button.action == "STOP" then
+                    elseif button.action == "STOP" then
 
-                    reactor:stop()
+                        reactor:stop()
 
-                elseif button.action == "PIN LOCK" then
+                    elseif button.action == "PIN LOCK" then
 
-                    lockPanel()
+                        lockPanel()
 
-                elseif button.action == "+" then
+                    elseif button.action == "+" then
 
-                    reactor:changeBurnRate(burnStep)
-                end
+                        reactor:changeBurnRate(burnStep)
+                    end
 
-                if showPinPad then
+                elseif panelLocked then
 
                     if button.action == "CLR" then
 
@@ -206,6 +207,20 @@ local function drawStatus(data)
 
 end
 
+local function drawOverlayLockpanel()
+
+    term.setBackgroundColor(colors.gray)
+    term.setTextColor(colors.gray)
+
+    for y = 1, mh do
+        term.setCursorPos(1, y)
+        write(string.rep(" ", mw))
+    end
+
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+
+end
 
 
 local function scadaLoop()
@@ -271,6 +286,8 @@ local function scadaLoop()
         buttons = {}
 
         if panelLocked then
+
+            drawOverlayLockpanel()
 
             drawButton(10, 7, 5, "1", colors.gray, true)
             drawButton(16, 7, 5, "2", colors.gray, true)
