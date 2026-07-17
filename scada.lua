@@ -291,21 +291,24 @@ local function scadaLoop()
 
             print(pinBuffer)
 
-            drawButton(15, 7, 5, "1", colors.gray, true)
-            drawButton(21, 7, 5, "2", colors.gray, true)
-            drawButton(27, 7, 5, "3", colors.gray, true)w
+            local startX = math.floor((mw - 17) / 2) + 1
+            local startY = math.floor((mh - 7) / 2) + 1
 
-            drawButton(15, 9, 5, "4", colors.gray, true)
-            drawButton(21, 9, 5, "5", colors.gray, true)
-            drawButton(27, 9, 5, "6", colors.gray, true)
+            drawButton(startX + 0,  startY + 0, 5, "1",   colors.gray, true)
+            drawButton(startX + 6,  startY + 0, 5, "2",   colors.gray, true)
+            drawButton(startX + 12, startY + 0, 5, "3",   colors.gray, true)
 
-            drawButton(15,11, 5, "7", colors.gray, true)
-            drawButton(21,11, 5, "8", colors.gray, true)
-            drawButton(27,11, 5, "9", colors.gray, true)
+            drawButton(startX + 0,  startY + 2, 5, "4",   colors.gray, true)
+            drawButton(startX + 6,  startY + 2, 5, "5",   colors.gray, true)
+            drawButton(startX + 12, startY + 2, 5, "6",   colors.gray, true)
 
-            drawButton(15,13, 5, "CLR", colors.red, true)
-            drawButton(21,13, 5, "0", colors.gray, true)
-            drawButton(27,13, 5, "OK", colors.green, true)
+            drawButton(startX + 0,  startY + 4, 5, "7",   colors.gray, true)
+            drawButton(startX + 6,  startY + 4, 5, "8",   colors.gray, true)
+            drawButton(startX + 12, startY + 4, 5, "9",   colors.gray, true)
+
+            drawButton(startX + 0,  startY + 6, 5, "CLR", colors.red,   true)
+            drawButton(startX + 6,  startY + 6, 5, "0",   colors.gray,  true)
+            drawButton(startX + 12, startY + 6, 5, "OK",  colors.green, true)
 
         else
 
