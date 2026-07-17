@@ -17,6 +17,8 @@ local config = {
 
     pin = "1234",
 
+    cardKey = "1234",
+
     -- Лимиты безопасности
 
     maxTemperature = 950,

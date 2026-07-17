@@ -2,6 +2,7 @@ local ReactorClass = require("FissionReactor")
 local config = require("config")
 local reactor = ReactorClass:new(config)
 local infoData = reactor:getInfoData()
+local reader = peripheral.find("mag_card_reader")
 
 
 local burnStep = 0.1
@@ -51,7 +52,6 @@ end
 
 
 local buttons = {}
-
 
 local function drawButton(x, y, w, text, color, enabled)
 
@@ -108,6 +108,20 @@ end
 local function lockPanel()
     panelLocked = true
     pinBuffer = ""
+end
+
+local function cardHandler()
+    while true do
+        local _, side = os.pullEvent("mag_card_insert")
+
+        if side == peripheral.getName(reader) then
+            local data = reader.read()
+
+            if data == config.cardKey then
+                unlockPanel()
+            end
+        end
+    end
 end
 
 local function touchHandler()
@@ -418,6 +432,8 @@ parallel.waitForAny(
 
     scadaLoop,
 
-    touchHandler
+    touchHandler,
+
+    cardHandler
 
 )
