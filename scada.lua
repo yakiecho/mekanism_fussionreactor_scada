@@ -289,121 +289,121 @@ local function scadaLoop()
 
             drawOverlayLockpanel()
 
-            drawButton(10, 7, 5, "1", colors.gray, true)
-            drawButton(16, 7, 5, "2", colors.gray, true)
-            drawButton(22, 7, 5, "3", colors.gray, true)
+            print(pinBuffer)
 
-            drawButton(10, 9, 5, "4", colors.gray, true)
-            drawButton(16, 9, 5, "5", colors.gray, true)
-            drawButton(22, 9, 5, "6", colors.gray, true)
+            drawButton(15, 7, 5, "1", colors.gray, true)
+            drawButton(21, 7, 5, "2", colors.gray, true)
+            drawButton(27, 7, 5, "3", colors.gray, true)w
 
-            drawButton(10,11, 5, "7", colors.gray, true)
-            drawButton(16,11, 5, "8", colors.gray, true)
-            drawButton(22,11, 5, "9", colors.gray, true)
+            drawButton(15, 9, 5, "4", colors.gray, true)
+            drawButton(21, 9, 5, "5", colors.gray, true)
+            drawButton(27, 9, 5, "6", colors.gray, true)
 
-            drawButton(10,13, 5, "CLR", colors.red, true)
-            drawButton(16,13, 5, "0", colors.gray, true)
-            drawButton(22,13, 5, "OK", colors.green, true)
+            drawButton(15,11, 5, "7", colors.gray, true)
+            drawButton(21,11, 5, "8", colors.gray, true)
+            drawButton(27,11, 5, "9", colors.gray, true)
+
+            drawButton(15,13, 5, "CLR", colors.red, true)
+            drawButton(21,13, 5, "0", colors.gray, true)
+            drawButton(27,13, 5, "OK", colors.green, true)
 
         else
 
             drawButton(
-                2,
+                30,
                 mh - 2,
                 10,
                 "PIN LOCK",
                 colors.orange,
                 true
             )
+            if reactor.emergency then
 
-        end
-
-        if reactor.emergency then
-
-            drawButton(
-                30,
-                6,
-                5,
-                "-",
-                colors.gray,
-                false
-            )
-
-            drawButton(
-                36,
-                6,
-                5,
-                "+",
-                colors.gray,
-                false
-            )
-
-            drawButton(
-                2,
-                mh - 2,
-                10,
-                "START",
-                colors.gray,
-                false
-            )
-
-            drawButton(
-                15,
-                mh - 2,
-                10,
-                "UNLOCK",
-                colors.red,
-                true
-            )
-
-
-        else
-            drawButton(
-                30,
-                6,
-                5,
-                "-",
-                colors.red,
-                true
-            )
-
-            drawButton(
-                36,
-                6,
-                5,
-                "+",
-                colors.green,
-                true
-            )
-
-            if data.status == "true" then
                 drawButton(
-                    2,
-                    mh - 2,
-                    10,
-                    "STOP",
-                    colors.red,
-                    true
+                    30,
+                    6,
+                    5,
+                    "-",
+                    colors.gray,
+                    false
                 )
-            else
+
+                drawButton(
+                    36,
+                    6,
+                    5,
+                    "+",
+                    colors.gray,
+                    false
+                )
+
                 drawButton(
                     2,
                     mh - 2,
                     10,
                     "START",
+                    colors.gray,
+                    false
+                )
+
+                drawButton(
+                    15,
+                    mh - 2,
+                    10,
+                    "UNLOCK",
+                    colors.red,
+                    true
+                )
+
+
+            else
+                drawButton(
+                    30,
+                    6,
+                    5,
+                    "-",
+                    colors.red,
+                    true
+                )
+
+                drawButton(
+                    36,
+                    6,
+                    5,
+                    "+",
                     colors.green,
                     true
                 )
-            end
 
-            drawButton(
-                15,
-                mh - 2,
-                10,
-                "UNLOCK",
-                colors.gray,
-                false
-            )
+                if data.status == "true" then
+                    drawButton(
+                        2,
+                        mh - 2,
+                        10,
+                        "STOP",
+                        colors.red,
+                        true
+                    )
+                else
+                    drawButton(
+                        2,
+                        mh - 2,
+                        10,
+                        "START",
+                        colors.green,
+                        true
+                    )
+                end
+
+                drawButton(
+                    15,
+                    mh - 2,
+                    10,
+                    "UNLOCK",
+                    colors.gray,
+                    false
+                )
+            end
         end
 
         sleep(config.refreshRate)
