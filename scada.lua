@@ -115,7 +115,7 @@ local function cardHandler()
         local _, side = os.pullEvent("mag_card_insert")
 
         if side == peripheral.getName(reader) then
-            local data = reader.read()
+            local id, data = reader.read()
 
             if data == config.cardKey then
                 unlockPanel()
