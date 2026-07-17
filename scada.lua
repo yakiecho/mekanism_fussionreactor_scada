@@ -2,7 +2,12 @@ local ReactorClass = require("FissionReactor")
 local config = require("config")
 local reactor = ReactorClass:new(config)
 local infoData = reactor:getInfoData()
+
+
 local burnStep = 0.1
+local panelLocked = true
+local pinBuffer = ""
+
 
 local monitor = peripheral.wrap(
     config.monitor
@@ -95,6 +100,15 @@ local function drawButton(x, y, w, text, color, enabled)
 
 end
 
+local function unlockPanel()
+    panelLocked = false
+    pinBuffer = ""
+end
+
+local function lockPanel()
+    panelLocked = true
+    pinBuffer = ""
+end
 
 local function touchHandler()
 
@@ -126,9 +140,38 @@ local function touchHandler()
 
                     reactor:stop()
 
+                elseif button.action == "PIN LOCK" then
+
+                    lockPanel()
+
                 elseif button.action == "+" then
 
                     reactor:changeBurnRate(burnStep)
+                end
+
+                if showPinPad then
+
+                    if button.action == "CLR" then
+
+                        pinBuffer = ""
+
+                    elseif button.action == "OK" then
+                        if pinBuffer == config.pin then
+                            unlockPanel()
+
+                        else
+                            pinBuffer = ""
+                        end
+
+                    elseif tonumber(button.action) then
+                        if #pinBuffer < 8 then
+                            pinBuffer = pinBuffer .. button.action
+                        end
+
+                    end
+
+                    break
+
                 end
 
             end
@@ -168,7 +211,6 @@ end
 local function scadaLoop()
     while true do
 
-        
         local data = reactor:getData()
         
         reactor:safetyCheck(data)
@@ -227,6 +269,38 @@ local function scadaLoop()
         end
 
         buttons = {}
+
+        if panelLocked then
+
+            drawButton(10, 7, 5, "1", colors.gray, true)
+            drawButton(16, 7, 5, "2", colors.gray, true)
+            drawButton(22, 7, 5, "3", colors.gray, true)
+
+            drawButton(10, 9, 5, "4", colors.gray, true)
+            drawButton(16, 9, 5, "5", colors.gray, true)
+            drawButton(22, 9, 5, "6", colors.gray, true)
+
+            drawButton(10,11, 5, "7", colors.gray, true)
+            drawButton(16,11, 5, "8", colors.gray, true)
+            drawButton(22,11, 5, "9", colors.gray, true)
+
+            drawButton(10,13, 5, "CLR", colors.red, true)
+            drawButton(16,13, 5, "0", colors.gray, true)
+            drawButton(22,13, 5, "OK", colors.green, true)
+
+        else
+
+            drawButton(
+                2,
+                mh - 2,
+                10,
+                "PIN LOCK",
+                colors.orange,
+                true
+            )
+
+        end
+
         if reactor.emergency then
 
             drawButton(
