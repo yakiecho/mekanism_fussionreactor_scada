@@ -2,7 +2,7 @@ local ReactorClass = require("FissionReactor")
 local config = require("config")
 local reactor = ReactorClass:new(config)
 local infoData = reactor:getInfoData()
-local reader = peripheral.find("mag_card_reader")
+local reader = peripheral.find("magnetic_card_manipulator")
 
 
 local burnStep = 0.1
@@ -112,15 +112,22 @@ end
 
 local function cardHandler()
     while true do
-        local _, side = os.pullEvent("mag_card_insert")
+        if reader.hasCard() then
 
-        if side == peripheral.getName(reader) then
-            local id, data = reader.read()
+            local key = reader.readCard()
 
-            if data == config.cardKey then
+            if key == config.cardKey then
                 unlockPanel()
             end
+
+            reader.ejectCard()
+
+            while reader.hasCard() do
+                sleep(0.1)
+            end
         end
+
+        sleep(0.1)
     end
 end
 
