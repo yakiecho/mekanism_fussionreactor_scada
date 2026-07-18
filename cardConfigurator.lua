@@ -59,11 +59,19 @@ while true do
 
         print("Card erased.")
 
+        print()
+        print("Press Enter...")
+        read()
+
     elseif choice == "5" then
         for _, method in ipairs(peripheral.getMethods(peripheral.getName(reader))) do
             print(method)
         end
-        
+
+        print()
+        print("Press Enter...")
+        read()
+
     elseif choice == "4" then
         break
     end
