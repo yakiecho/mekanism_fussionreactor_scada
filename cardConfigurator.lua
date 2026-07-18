@@ -1,4 +1,4 @@
-local reader = peripheral.find("mag_card_reader")
+local reader = peripheral.find("magnetic_card_manipulator")
 
 if not reader then
     error("Mag Card Reader not found")
@@ -13,6 +13,7 @@ while true do
     print("2. Write card")
     print("3. Erase card")
     print("4. Exit")
+    print("5. Debug data")
     print()
 
     io.write("> ")
@@ -23,9 +24,7 @@ while true do
         print()
         print("Insert card...")
 
-        os.pullEvent("mag_card_insert")
-
-        local data = reader.read()
+        local data = reader.readCard()
 
         print()
         print("Card content:")
@@ -43,9 +42,7 @@ while true do
 
         print("Insert card...")
 
-        os.pullEvent("mag_card_insert")
-
-        reader.write(text)
+        reader.writeCard(text)
 
         print("Done.")
 
@@ -58,16 +55,15 @@ while true do
         print()
         print("Insert card...")
 
-        os.pullEvent("mag_card_insert")
-
         reader.erase()
 
         print("Card erased.")
 
-        print()
-        print("Press Enter...")
-        read()
-
+    elseif choice == "5" then
+        for _, method in ipairs(peripheral.getMethods(peripheral.getName(reader))) do
+            print(method)
+        end
+        
     elseif choice == "4" then
         break
     end
