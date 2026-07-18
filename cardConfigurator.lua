@@ -1,78 +1,113 @@
 local reader = peripheral.find("magnetic_card_manipulator")
 
 if not reader then
-    error("Mag Card Reader not found")
+    error("Magnetic Card Manipulator not found")
+end
+
+local function clear()
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+    term.clear()
+    term.setCursorPos(1,1)
+end
+
+local function pause()
+    print()
+    print("Press any key...")
+    os.pullEvent("key")
+end
+
+local function waitCard()
+
+    while not reader.hasCard() do
+        clear()
+
+        print("===================================")
+        print("     MAGNETIC CARD PROGRAMMER")
+        print("===================================")
+        print()
+        print("Insert magnetic card...")
+
+        sleep(0.2)
+    end
+
 end
 
 while true do
-    term.clear()
-    term.setCursorPos(1,1)
 
-    print("====== MAG CARD TOOL ======")
-    print("1. Read card")
-    print("2. Write card")
-    print("3. Erase card")
-    print("4. Exit")
-    print("5. Debug data")
+    waitCard()
+
+    clear()
+
+    print("===================================")
+    print("     MAGNETIC CARD PROGRAMMER")
+    print("===================================")
     print()
 
-    io.write("> ")
+    print("Card label : "..tostring(reader.getLabel()))
+    print("Card data  : "..tostring(reader.readCard()))
+    print()
+
+    print("1. Write key")
+    print("2. Read card")
+    print("3. Rename card")
+    print("4. Lock card")
+    print("5. Eject")
+    print("0. Exit")
+    print()
+
+    write("> ")
+
     local choice = read()
 
     if choice == "1" then
 
-        print()
-        print("Insert card...")
+        write("Key: ")
+        local key = read()
 
-        local data = reader.readCard()
+        if reader.writeCard(key) then
+            print("Key written.")
+        else
+            print("Write failed.")
+        end
 
-        print()
-        print("Card content:")
-        print(textutils.serialize(data))
-
-        print()
-        print("Press Enter...")
-        read()
+        pause()
 
     elseif choice == "2" then
 
         print()
-        print("Text to write:")
-        local text = read()
+        print("Card data:")
+        print(reader.readCard())
 
-        print("Insert card...")
-
-        reader.writeCard(text)
-
-        print("Done.")
-
-        print()
-        print("Press Enter...")
-        read()
+        pause()
 
     elseif choice == "3" then
 
-        print()
-        print("Insert card...")
+        write("Label: ")
+        local label = read()
 
-        reader.erase()
+        reader.setLabel(label)
 
-        print("Card erased.")
+        print("Label changed.")
 
-        print()
-        print("Press Enter...")
-        read()
-
-    elseif choice == "5" then
-        for _, method in ipairs(peripheral.getMethods(peripheral.getName(reader))) do
-            print(method)
-        end
-
-        print()
-        print("Press Enter...")
-        read()
+        pause()
 
     elseif choice == "4" then
+
+        reader.setSecure(true)
+
+        print("Card locked.")
+
+        pause()
+
+    elseif choice == "5" then
+
+        reader.ejectCard()
+
+    elseif choice == "0" then
+
         break
+
     end
+
 end

@@ -116,7 +116,7 @@ local function cardHandler()
 
             local key = reader.readCard()
 
-            if key == config.cardKey then
+            if key == config.cardKey then 
                 unlockPanel()
             end
 
