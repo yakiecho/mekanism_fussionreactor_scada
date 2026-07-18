@@ -3,23 +3,12 @@ local REPO = "mekanism_fussionreactor_scada"
 
 local INSTALL_DIR = "SCADA"
 
-local API = ("https://api.github.com/repos/%s/%s/contents")
-    :format(USER, REPO)
-
-
--------------------------------------------------
--- Игнорируемые файлы
--------------------------------------------------
+local API = ("https://api.github.com/repos/%s/%s/contents"):format(USER, REPO)
 
 local ignore = {
     ["install.lua"] = true,
     [".update"] = true
 }
-
-
--------------------------------------------------
--- Удаление старой версии
--------------------------------------------------
 
 local function removeOld()
 
@@ -32,11 +21,6 @@ local function removeOld()
     end
 
 end
-
-
--------------------------------------------------
--- Скачивание файлов
--------------------------------------------------
 
 local function downloadDirectory(apiUrl, currentPath)
 
@@ -142,12 +126,6 @@ local function downloadDirectory(apiUrl, currentPath)
 
 end
 
-
-
--------------------------------------------------
--- Добавление автозапуска
--------------------------------------------------
-
 local function installStartup()
 
     local startupCode = [[
@@ -174,32 +152,18 @@ shell.run("SCADA/scada.lua")
 
 end
 
-
-
--------------------------------------------------
--- Установка
--------------------------------------------------
-
 print("Starting installation...")
-
 
 removeOld()
 
-
 fs.makeDir(INSTALL_DIR)
-
-
 
 downloadDirectory(
     API,
     INSTALL_DIR
 )
 
-
-
 installStartup()
-
-
 
 print("")
 print("Installation complete!")

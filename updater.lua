@@ -8,20 +8,12 @@ local INSTALL_DIR = "SCADA"
 local API = ("https://api.github.com/repos/%s/%s/contents")
     :format(USER, REPO)
 
-
 local CACHE_FILE = "SCADA/.update"
-
 
 local ignore = {
     ["install.lua"] = true,
     [".update"] = true
 }
-
-
-
--------------------------------------------------
--- Загрузка кеша
--------------------------------------------------
 
 local function loadCache()
 
@@ -42,12 +34,6 @@ local function loadCache()
 
 end
 
-
-
--------------------------------------------------
--- Сохранение кеша
--------------------------------------------------
-
 local function saveCache(data)
 
     local file = fs.open(
@@ -64,12 +50,6 @@ local function saveCache(data)
     file.close()
 
 end
-
-
-
--------------------------------------------------
--- Получение файлов GitHub
--------------------------------------------------
 
 local function getFiles(apiUrl, result)
 
@@ -122,12 +102,6 @@ local function getFiles(apiUrl, result)
 
 end
 
-
-
--------------------------------------------------
--- Скачивание файла
--------------------------------------------------
-
 local function download(item)
 
 
@@ -179,12 +153,6 @@ local function download(item)
     end
 
 end
-
-
-
--------------------------------------------------
--- Обновление
--------------------------------------------------
 
 local function update()
 

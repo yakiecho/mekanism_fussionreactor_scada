@@ -2,9 +2,24 @@ local ui = {}
 
 local buttons = {}
 
--------------------------------------------------
--- Инициализация
--------------------------------------------------
+
+ui.theme = {
+    bg = colors.black,
+    panel = colors.gray,
+    panelDark = colors.lightGray,
+    border = colors.white,
+
+    text = colors.white,
+    textDark = colors.lightGray,
+
+    green = colors.green,
+    red = colors.red,
+    orange = colors.orange,
+    blue = colors.blue,
+    cyan = colors.cyan,
+    gray = colors.gray
+}
+
 
 function ui.init(target)
 
@@ -12,18 +27,17 @@ function ui.init(target)
         term.redirect(target)
     end
 
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.text)
+    term.clear()
+
 end
 
--------------------------------------------------
--- Экран
--------------------------------------------------
 
 function ui.clear()
 
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.text)
     term.clear()
     term.setCursorPos(1,1)
 
@@ -31,43 +45,138 @@ function ui.clear()
 
 end
 
--------------------------------------------------
--- Заголовок
--------------------------------------------------
+
+function ui.background()
+
+    local w,h = term.getSize()
+
+    term.setBackgroundColor(ui.theme.bg)
+
+    for y=1,h do
+        term.setCursorPos(1,y)
+        write(string.rep(" ",w))
+    end
+
+end
+
 
 function ui.title(text)
 
     local w = term.getSize()
 
-    term.setBackgroundColor(colors.gray)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(ui.theme.panel)
+    term.setTextColor(ui.theme.text)
 
     term.setCursorPos(1,1)
-    write(string.rep(" ", w))
+    write(string.rep(" ",w))
 
-    term.setCursorPos(math.floor((w - #text) / 2) + 1,1)
+    term.setCursorPos(
+        math.floor((w-#text)/2)+1,
+        1
+    )
+
     write(text)
 
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(ui.theme.bg)
 
 end
 
--------------------------------------------------
--- Прогресс
--------------------------------------------------
 
-function ui.progress(x,y,width,value,color)
+function ui.status(text,color)
 
-    color = color or colors.green
+    local w,h = term.getSize()
 
-    local filled = math.floor(width * value)
+    term.setBackgroundColor(color or ui.theme.panel)
+    term.setTextColor(colors.white)
+
+    term.setCursorPos(1,h)
+    write(string.rep(" ",w))
+
+    term.setCursorPos(2,h)
+    write(text)
+
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.text)
+
+end
+
+
+function ui.panel(x,y,w,h,title)
+
+    term.setBackgroundColor(ui.theme.panelDark)
+
+    for yy=y,y+h-1 do
+        term.setCursorPos(x,yy)
+        write(string.rep(" ",w))
+    end
+
+    paintutils.drawBox(
+        x,
+        y,
+        x+w-1,
+        y+h-1,
+        ui.theme.border
+    )
+
+    if title then
+
+        term.setCursorPos(
+            x+2,
+            y
+        )
+
+        term.setBackgroundColor(ui.theme.panel)
+
+        write(" "..title.." ")
+
+        term.setBackgroundColor(ui.theme.panelDark)
+
+    end
+
+end
+
+
+function ui.separator(y)
+
+    local w = term.getSize()
+
+    term.setCursorPos(1,y)
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.gray)
+
+    write(string.rep("-",w))
+
+    term.setTextColor(ui.theme.text)
+
+end
+
+
+function ui.label(x,y,text,color)
 
     term.setCursorPos(x,y)
 
-    for i=1,width do
+    term.setTextColor(
+        color or ui.theme.text
+    )
 
-        if i <= filled then
+    write(text)
+
+    term.setTextColor(ui.theme.text)
+
+end
+
+
+function ui.progress(x,y,w,value,color)
+
+    color = color or ui.theme.green
+
+    local fill = math.floor(w*value)
+
+    term.setCursorPos(x,y)
+
+    for i=1,w do
+
+        if i<=fill then
             term.setBackgroundColor(color)
         else
             term.setBackgroundColor(colors.gray)
@@ -77,41 +186,24 @@ function ui.progress(x,y,width,value,color)
 
     end
 
-    term.setBackgroundColor(colors.black)
+    term.setBackgroundColor(ui.theme.bg)
 
 end
 
--------------------------------------------------
--- Надпись
--------------------------------------------------
-
-function ui.label(x,y,text,color)
-
-    term.setCursorPos(x,y)
-
-    term.setTextColor(color or colors.white)
-
-    write(text)
-
-    term.setTextColor(colors.white)
-
-end
-
--------------------------------------------------
--- Кнопка
--------------------------------------------------
 
 function ui.button(x,y,w,text,color,enabled)
 
     enabled = enabled ~= false
 
-    term.setBackgroundColor(enabled and color or colors.gray)
+    local bg = enabled and color or colors.gray
+
+    term.setBackgroundColor(bg)
 
     term.setCursorPos(x,y)
     write(string.rep(" ",w))
 
     term.setCursorPos(
-        x + math.floor((w - #text)/2),
+        x+math.floor((w-#text)/2),
         y
     )
 
@@ -123,8 +215,16 @@ function ui.button(x,y,w,text,color,enabled)
 
     write(text)
 
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.text)
+
+    paintutils.drawBox(
+        x,
+        y,
+        x+w-1,
+        y,
+        colors.white
+    )
 
     table.insert(buttons,{
         x=x,
@@ -137,18 +237,15 @@ function ui.button(x,y,w,text,color,enabled)
 
 end
 
--------------------------------------------------
--- Проверка нажатия
--------------------------------------------------
 
 function ui.getButton(x,y)
 
     for _,b in ipairs(buttons) do
 
         if b.enabled
-        and x >= b.x
-        and x < b.x + b.w
-        and y == b.y then
+        and x>=b.x
+        and x<b.x+b.w
+        and y==b.y then
 
             return b.text
 
@@ -158,40 +255,6 @@ function ui.getButton(x,y)
 
 end
 
--------------------------------------------------
--- Окно
--------------------------------------------------
-
-function ui.window(x,y,w,h,title)
-
-    term.setBackgroundColor(colors.lightGray)
-
-    for yy=y,y+h-1 do
-        term.setCursorPos(x,yy)
-        write(string.rep(" ",w))
-    end
-
-    term.setBackgroundColor(colors.gray)
-
-    term.setCursorPos(x,y)
-    write(string.rep(" ",w))
-
-    term.setCursorPos(
-        x + math.floor((w-#title)/2),
-        y
-    )
-
-    term.setTextColor(colors.white)
-    write(title)
-
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
-
-end
-
--------------------------------------------------
--- Затемнение
--------------------------------------------------
 
 function ui.overlay()
 
@@ -204,45 +267,64 @@ function ui.overlay()
         write(string.rep(" ",w))
     end
 
-    term.setBackgroundColor(colors.black)
+    term.setBackgroundColor(ui.theme.bg)
 
 end
 
--------------------------------------------------
--- Центрирование
--------------------------------------------------
 
-function ui.centerWindow(width,height)
+function ui.centerWindow(w,h)
 
-    local w,h = term.getSize()
+    local tw,th = term.getSize()
 
     return
-        math.floor((w-width)/2)+1,
-        math.floor((h-height)/2)+1
+        math.floor((tw-w)/2)+1,
+        math.floor((th-h)/2)+1
 
 end
 
--------------------------------------------------
--- Диалог
--------------------------------------------------
 
 function ui.dialog(title,message)
 
-    local x,y = ui.centerWindow(34,7)
+    local x,y = ui.centerWindow(40,8)
 
     ui.overlay()
-    ui.window(x,y,34,7,title)
 
-    ui.label(x+2,y+2,message)
+    ui.panel(
+        x,
+        y,
+        40,
+        8,
+        title
+    )
+
+    ui.label(
+        x+2,
+        y+2,
+        message
+    )
 
     ui.button(
-        x+12,
-        y+5,
+        x+15,
+        y+6,
         10,
         "OK",
-        colors.green,
-        true
+        ui.theme.green
     )
+
+end
+
+
+function ui.infoBox(x,y,w,title,lines)
+
+    ui.panel(x,y,w,#lines+3,title)
+
+    for i,v in ipairs(lines) do
+        ui.label(
+            x+2,
+            y+1+i,
+            v
+        )
+    end
 
 end
 
