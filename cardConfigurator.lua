@@ -1,4 +1,5 @@
 local reader = peripheral.find("magnetic_card_manipulator")
+dofile("/SCADA/sha256.lua")
 
 if not reader then
     error("Magnetic Card Manipulator not found")
@@ -49,6 +50,7 @@ while true do
     print()
 
     print("1. Write key")
+    print("1a. Write SHA256 key")
     print("2. Read card")
     print("3. Rename card")
     print("4. Lock card")
@@ -67,6 +69,19 @@ while true do
 
         if reader.writeCard(key) then
             print("Key written.")
+        else
+            print("Write failed.")
+        end
+
+        pause()
+
+    elseif choice == "1a" then
+
+        write("Key: ")
+        local key = read()
+
+        if reader.writeCard(sha256(key)) then
+            print("SHA256 Key written.")
         else
             print("Write failed.")
         end

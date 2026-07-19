@@ -3,6 +3,7 @@ local config = require("config")
 local reactor = ReactorClass:new(config)
 local infoData = reactor:getInfoData()
 local reader = peripheral.find("magnetic_card_manipulator")
+dofile("/SCADA/sha256.lua")
 
 
 local burnStep = 0.1
@@ -116,11 +117,11 @@ local function cardHandler()
 
             local key = reader.readCard()
 
-            if key == config.cardKey then 
+            if sha256(key) == config.cardKey then 
                 unlockPanel()
             end
 
-            reader.ejectCard()
+            -- reader.ejectCard()
 
             while reader.hasCard() do
                 sleep(0.1)
@@ -178,7 +179,7 @@ local function touchHandler()
                         pinBuffer = ""
 
                     elseif button.action == "OK" then
-                        if pinBuffer == config.pin then
+                        if sha256(pinBuffer) == config.pin then
                             unlockPanel()
 
                         else
