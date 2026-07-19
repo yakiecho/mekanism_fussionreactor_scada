@@ -183,6 +183,67 @@ function ui.progress(x,y,w,value,color)
 end
 
 
+function ui.separator(y)
+
+    local w = term.getSize()
+
+    term.setCursorPos(2, y)
+    term.setBackgroundColor(ui.theme.bg)
+    term.setTextColor(ui.theme.border)
+
+    write(string.rep("-", w - 2))
+
+    term.setTextColor(ui.theme.text)
+
+end
+
+
+function ui.value(x, y, name, value)
+
+    ui.label(x, y, name)
+    ui.label(x + 18, y, tostring(value), ui.theme.cyan)
+
+end
+
+
+function ui.list(x, y, w, h, items, selected)
+
+    ui.panel(x, y, w, h, "Detected displays")
+
+    for i = 1, h - 2 do
+
+        local index = i
+
+        if items[index] then
+
+            local bg = ui.theme.panelDark
+
+            if index == selected then
+                bg = colors.blue
+            end
+
+            term.setCursorPos(x + 1, y + i)
+            term.setBackgroundColor(bg)
+
+            write(string.rep(" ", w - 2))
+
+            ui.label(
+                x + 2,
+                y + i,
+                items[index],
+                colors.white,
+                bg
+            )
+
+        end
+
+    end
+
+    term.setBackgroundColor(ui.theme.bg)
+
+end
+
+
 function ui.button(x,y,w,text,color,enabled)
 
     enabled = enabled ~= false

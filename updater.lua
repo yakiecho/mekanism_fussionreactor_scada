@@ -44,7 +44,7 @@ local function backupConfig()
         print("Backup config...")
         fs.copy(
             CONFIG_FILE,
-            OLD_CONFIG
+            CONFIG_BACKUP
         )
 
     end
@@ -52,14 +52,14 @@ end
 
 local function migrateConfig()
 
-    if not fs.exists(OLD_CONFIG) then
+    if not fs.exists(CONFIG_BACKUP) then
         return
     end
 
     print("Migrating config...")
 
     local oldConfig =
-        dofile(OLD_CONFIG)
+        dofile(CONFIG_BACKUP)
     local newConfig =
         dofile(CONFIG_FILE)
 
@@ -82,7 +82,7 @@ local function migrateConfig()
     )
 
     file.close()
-    fs.delete(OLD_CONFIG)
+    fs.delete(CONFIG_BACKUP)
 end
 
 local function saveCache(data)

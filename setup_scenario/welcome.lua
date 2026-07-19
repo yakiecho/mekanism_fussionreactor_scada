@@ -10,16 +10,7 @@ function welcome.run()
         ui.clear()
 
         local w, h = term.getSize()
-
-        -------------------------------------------------
-        -- Шапка
-        -------------------------------------------------
-
         ui.title("MEKANISM FISSION SCADA SETUP")
-
-        -------------------------------------------------
-        -- Главное окно
-        -------------------------------------------------
 
         local x = 2
         local y = 3
@@ -38,13 +29,14 @@ function welcome.run()
         ui.label(x + 20, y + 7, config.version or "1.0.0")
 
         ui.label(x + 2, y + 8,  "Build")
-        ui.label(x + 20, y + 8, config.build or "2026.07.19", ui.theme.bg)
+        ui.label(x + 20, y + 8, config.build or "2026.07.19")
 
         ui.label(x + 2, y + 9,  "Developer")
         ui.label(x + 20, y + 9, "yakiecho")
 
         ui.label(x + 2, y + 10, "Repository")
-        ui.label(x + 20, y + 10, "github.com/yakiecho/mekanism_fussionreactor_scada")
+        ui.label(x + 20, y + 10, "github.com/yakiecho/")
+        ui.label(x + 2, y + 11, "mekanism_fussionreactor_scada")
 
         ui.label(
             x + 2,
@@ -79,20 +71,18 @@ function welcome.run()
             )
         end
 
-        -------------------------------------------------
-        -- Обработка
-        -------------------------------------------------
-
         local _, _, bx, by = os.pullEvent("mouse_click")
 
         local button = ui.getButton(bx, by)
 
         if button == "START" then
-            return true
+           shell.run("/SCADA/setup_scenario/monitor_setup.lua")
         end
 
     end
 
 end
 
-return welcome
+-- return welcome
+
+welcome.run()
