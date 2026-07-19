@@ -209,14 +209,10 @@ local function download(item)
 
 end
 
-local function loadVersion()
+local function getRemoteVersionNeed()
 
     if not fs.exists(VERSION_FILE) then
-        return {
-            version = "0.0.0",
-            build = 0,
-            date = ""
-        }
+        return true
     end
 
 
@@ -231,12 +227,6 @@ local function loadVersion()
 
     file.close()
 
-    return data
-
-end
-
-local function getRemoteVersion()
-
     local request = http.get(
         REMOTE_VERSION
     )
@@ -245,38 +235,38 @@ local function getRemoteVersion()
         error("Cannot check version")
     end
 
-
     local data = textutils.unserializeJSON(
         request.readAll()
     )
 
     request.close()
 
-    return data
+    if remoteVersion.build > localVersion.build then
+        return true
+    end
+
+
+    if remoteVersion.version ~= localVersion.version then
+        return true
+    end
+
+
+    return false
 
 end
 
 local function needUpdate()
 
-    local localVersion =
-        loadVersion()
-
-    local remoteVersion =
-        getRemoteVersion()
-
-
-    if remoteVersion.build > localVersion.build then
-        return true, remoteVersion
+    if getRemoteVersionNeed() then
+        return true
     end
 
-
-    if remoteVersion.version ~= localVersion.version then
-        return true, remoteVersion
+    for path,item in pairs(remote) do
+        newCache[path] = item.sha
+        if old[path] ~= item.sha then
+            return true
+        end
     end
-
-
-    return false, localVersion
-
 end
 
 local function update()
