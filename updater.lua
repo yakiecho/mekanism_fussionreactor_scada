@@ -209,6 +209,10 @@ local function download(item)
 
 end
 
+local old = loadCache()
+local remote = getFiles(API)
+local newCache = {}
+
 local function getRemoteVersionNeed()
 
     if not fs.exists(VERSION_FILE) then
@@ -221,7 +225,7 @@ local function getRemoteVersionNeed()
         "r"
     )
 
-    local data = textutils.unserializeJSON(
+    local datalocal = textutils.unserializeJSON(
         file.readAll()
     )
 
@@ -235,18 +239,18 @@ local function getRemoteVersionNeed()
         error("Cannot check version")
     end
 
-    local data = textutils.unserializeJSON(
+    local dataremote = textutils.unserializeJSON(
         request.readAll()
     )
 
     request.close()
 
-    if remoteVersion.build > localVersion.build then
+    if dataremote.build > datalocal.build then
         return true
     end
 
 
-    if remoteVersion.version ~= localVersion.version then
+    if dataremote.version ~= datalocal.version then
         return true
     end
 
@@ -287,10 +291,6 @@ local function update()
     end
 
     backupConfig()
-
-    local old = loadCache()
-    local remote = getFiles(API)
-    local newCache = {}
 
     for path,item in pairs(remote) do
         newCache[path] = item.sha
