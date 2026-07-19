@@ -3,6 +3,9 @@ local config = require("config")
 local USER = "yakiecho"
 local REPO = "mekanism_fussionreactor_scada"
 
+local CONFIG_FILE = "SCADA/config.lua"
+local CONFIG_BACKUP = "config_backup.lua"
+
 local INSTALL_DIR = "SCADA"
 
 local API = ("https://api.github.com/repos/%s/%s/contents")
@@ -32,6 +35,54 @@ local function loadCache()
 
     return data or {}
 
+end
+
+local function backupConfig()
+
+    if fs.exists(CONFIG_FILE) then
+
+        print("Backup config...")
+        fs.copy(
+            CONFIG_FILE,
+            OLD_CONFIG
+        )
+
+    end
+end
+
+local function migrateConfig()
+
+    if not fs.exists(OLD_CONFIG) then
+        return
+    end
+
+    print("Migrating config...")
+
+    local oldConfig =
+        dofile(OLD_CONFIG)
+    local newConfig =
+        dofile(CONFIG_FILE)
+
+
+    for key,value in pairs(oldConfig) do
+        if newConfig[key] ~= nil then
+            newConfig[key] = value
+
+        end
+    end
+
+    local file = fs.open(
+        CONFIG_FILE,
+        "w"
+    )
+
+    file.write(
+        "return " ..
+        textutils.serialize(newConfig)
+    )
+
+    file.close()
+    fs.delete(OLD_CONFIG)
 end
 
 local function saveCache(data)
@@ -175,6 +226,8 @@ local function update()
 
 end
 
-if config.update then 
+if config.update then
+    backupConfig()
     update()
+    migrateConfig()
 end

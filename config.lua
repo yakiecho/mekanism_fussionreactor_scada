@@ -1,31 +1,15 @@
-local config = {
-
-    reactor = "fissionReactorLogicAdapter_0",
-
-    first_start = false,
-
-    debug = true,
-
-    monitor = "monitor_1",
-
-    update = true,
-
-    refreshRate = 0,
-
-    pin = "1234",
-
-    cardKey = "1234",
-
-    maxTemperature = 950,
-
-    maxDamage = 0,
-
-    minFuel = 0.10,
-
-    minCoolant = 0.20,
-
-    maxWaste = 0.90,
+return {
+  reactor = "fissionReactorLogicAdapter_0",
+  debug = false,
+  maxDamage = 0,
+  first_start = false,
+  minFuel = 0.1,
+  update = true,
+  maxWaste = 0.9,
+  monitor = "monitor_1",
+  maxTemperature = 950,
+  cardKey = "1111",
+  pin = "1111",
+  refreshRate = 0,
+  minCoolant = 0.2,
 }
-
-
-return config
