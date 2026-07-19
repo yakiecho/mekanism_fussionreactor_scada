@@ -6,6 +6,10 @@ local REPO = "mekanism_fussionreactor_scada"
 local CONFIG_FILE = "SCADA/config.lua"
 local CONFIG_BACKUP = "config_backup.lua"
 
+local VERSION_FILE = "SCADA/version.json"
+local REMOTE_VERSION = 
+    "https://raw.githubusercontent.com/yakiecho/mekanism_fussionreactor_scada/main/version.json"
+
 local INSTALL_DIR = "SCADA"
 
 local API = ("https://api.github.com/repos/%s/%s/contents")
@@ -205,9 +209,94 @@ local function download(item)
 
 end
 
+local function loadVersion()
+
+    if not fs.exists(VERSION_FILE) then
+        return {
+            version = "0.0.0",
+            build = 0,
+            date = ""
+        }
+    end
+
+
+    local file = fs.open(
+        VERSION_FILE,
+        "r"
+    )
+
+    local data = textutils.unserializeJSON(
+        file.readAll()
+    )
+
+    file.close()
+
+    return data
+
+end
+
+local function getRemoteVersion()
+
+    local request = http.get(
+        REMOTE_VERSION
+    )
+
+    if not request then
+        error("Cannot check version")
+    end
+
+
+    local data = textutils.unserializeJSON(
+        request.readAll()
+    )
+
+    request.close()
+
+    return data
+
+end
+
+local function needUpdate()
+
+    local localVersion =
+        loadVersion()
+
+    local remoteVersion =
+        getRemoteVersion()
+
+
+    if remoteVersion.build > localVersion.build then
+        return true, remoteVersion
+    end
+
+
+    if remoteVersion.version ~= localVersion.version then
+        return true, remoteVersion
+    end
+
+
+    return false, localVersion
+
+end
+
 local function update()
 
     print("Checking updates...")
+
+    local updateNeeded, version =
+        needUpdate()
+
+
+    if not updateNeeded then
+
+        print(
+            "SCADA is up to date"
+        )
+
+        return false
+    end
+
+    backupConfig()
 
     local old = loadCache()
     local remote = getFiles(API)
@@ -221,13 +310,11 @@ local function update()
     end
 
     saveCache(newCache)
-
+    migrateConfig()
     print("Update complete!")
 
 end
 
-if config.update then
-    backupConfig()
+if config.update then 
     update()
-    migrateConfig()
 end
