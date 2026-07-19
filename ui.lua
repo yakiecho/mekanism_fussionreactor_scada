@@ -92,7 +92,7 @@ function ui.status(text,color)
     term.setCursorPos(1,h)
     write(string.rep(" ",w))
 
-    term.setCursorPos(2,h)
+    term.setCursorPos(1,h)
     write(text)
 
     term.setBackgroundColor(ui.theme.bg)
@@ -127,7 +127,9 @@ function ui.panel(x,y,w,h,title)
 
         term.setBackgroundColor(ui.theme.panel)
 
-        write(" "..title.." ")
+        if title ~= "" then 
+            write(" "..title.." ")
+        end
 
         term.setBackgroundColor(ui.theme.panelDark)
 
@@ -136,33 +138,23 @@ function ui.panel(x,y,w,h,title)
 end
 
 
-function ui.separator(y)
+function ui.label(x, y, text, color, bgcolor)
 
-    local w = term.getSize()
+    term.setCursorPos(x, y)
 
-    term.setCursorPos(1,y)
-    term.setBackgroundColor(ui.theme.bg)
-    term.setTextColor(ui.theme.gray)
+    if color then
+        term.setTextColor(color)
+    else
+        term.setTextColor(ui.theme.text)
+    end
 
-    write(string.rep("-",w))
-
-    term.setTextColor(ui.theme.text)
-
-end
-
-
-function ui.label(x,y,text,color)
-
-    term.setCursorPos(x,y)
-
-    term.setTextColor(
-        color or ui.theme.text
-    )
+    if bgcolor then
+        term.setBackgroundColor(bgcolor)
+    end
 
     write(text)
 
     term.setTextColor(ui.theme.text)
-
 end
 
 
@@ -197,6 +189,14 @@ function ui.button(x,y,w,text,color,enabled)
 
     local bg = enabled and color or colors.gray
 
+    paintutils.drawBox(
+        x,
+        y,
+        x+w-1,
+        y,
+        color
+    )
+
     term.setBackgroundColor(bg)
 
     term.setCursorPos(x,y)
@@ -208,23 +208,12 @@ function ui.button(x,y,w,text,color,enabled)
     )
 
     if enabled then
-        term.setTextColor(colors.white)
+        term.setTextColor(ui.theme.text)
     else
-        term.setTextColor(colors.lightGray)
+        term.setTextColor(ui.theme.text)
     end
 
     write(text)
-
-    term.setBackgroundColor(ui.theme.bg)
-    term.setTextColor(ui.theme.text)
-
-    paintutils.drawBox(
-        x,
-        y,
-        x+w-1,
-        y,
-        colors.white
-    )
 
     table.insert(buttons,{
         x=x,
@@ -250,9 +239,7 @@ function ui.getButton(x,y)
             return b.text
 
         end
-
     end
-
 end
 
 

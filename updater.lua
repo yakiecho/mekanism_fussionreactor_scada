@@ -156,45 +156,24 @@ end
 
 local function update()
 
-
     print("Checking updates...")
 
-
     local old = loadCache()
-
-
     local remote = getFiles(API)
-
-
-
     local newCache = {}
 
-
-
     for path,item in pairs(remote) do
-
-
         newCache[path] = item.sha
-
-
-
         if old[path] ~= item.sha then
-
             download(item)
-
         end
-
-
     end
 
-
     saveCache(newCache)
-
 
     print("Update complete!")
 
 end
-
 
 if config.update then 
     update()

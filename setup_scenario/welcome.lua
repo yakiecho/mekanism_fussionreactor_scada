@@ -1,8 +1,9 @@
-local ui = require("ui")
+local ui = dofile("/SCADA/ui.lua")
+local config = dofile("/SCADA/config.lua")
 
 local welcome = {}
 
-function welcome.run(state)
+function welcome.run()
 
     while true do
 
@@ -14,15 +15,15 @@ function welcome.run(state)
         -- Шапка
         -------------------------------------------------
 
-        ui.title("MEKANISM FISSION SCADA")
+        ui.title("MEKANISM FISSION SCADA SETUP")
 
         -------------------------------------------------
         -- Главное окно
         -------------------------------------------------
 
-        local x = 3
+        local x = 2
         local y = 3
-        local pw = w - 4
+        local pw = w - 2
         local ph = h - 6
 
         ui.panel(
@@ -30,48 +31,31 @@ function welcome.run(state)
             y,
             pw,
             ph,
-            "Commissioning Wizard"
+            ""
         )
+
+        ui.label(x + 2, y + 7,  "Version")
+        ui.label(x + 20, y + 7, config.version or "1.0.0")
+
+        ui.label(x + 2, y + 8,  "Build")
+        ui.label(x + 20, y + 8, config.build or "2026.07.19", ui.theme.bg)
+
+        ui.label(x + 2, y + 9,  "Developer")
+        ui.label(x + 20, y + 9, "yakiecho")
+
+        ui.label(x + 2, y + 10, "Repository")
+        ui.label(x + 20, y + 10, "github.com/yakiecho/mekanism_fussionreactor_scada")
 
         ui.label(
             x + 2,
             y + 2,
-            "Welcome."
+            "This setup wizard will prepare the SCADA"
         )
 
         ui.label(
             x + 2,
-            y + 4,
-            "This wizard will prepare the SCADA"
-        )
-
-        ui.label(
-            x + 2,
-            y + 5,
+            y + 3,
             "system for first operation."
-        )
-
-        ui.separator(y + 7)
-
-        ui.label(
-            x + 2,
-            y + 9,
-            "The following steps will be completed:"
-        )
-
-        ui.label(x + 4, y + 11, "• Reactor detection")
-        ui.label(x + 4, y + 12, "• Monitor selection")
-        ui.label(x + 4, y + 13, "• Magnetic card setup")
-        ui.label(x + 4, y + 14, "• Security PIN")
-        ui.label(x + 4, y + 15, "• Safety limits")
-        ui.label(x + 4, y + 16, "• Final diagnostics")
-
-        ui.separator(y + ph - 4)
-
-        ui.label(
-            x + 2,
-            y + ph - 3,
-            "Estimated setup time: less than 2 minutes."
         )
 
         ui.button(
@@ -83,10 +67,17 @@ function welcome.run(state)
             true
         )
 
-        ui.status(
-            "Ready for commissioning",
-            colors.green
-        )
+        if config.first_start then
+            ui.status(
+                "Ready for commissioning",
+                colors.green
+            )
+        else 
+            ui.status(
+                "You're already configured!\nOld configuration settings will be deleted!",
+                colors.orange
+            )
+        end
 
         -------------------------------------------------
         -- Обработка
