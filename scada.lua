@@ -9,27 +9,58 @@ dofile("/SCADA/sha256.lua")
 local burnStep = 0.1
 local panelLocked = true
 local pinBuffer = ""
+local buttons = {}
 
+local currentMonitorSide = nil
+local monitors = {}
 
-local monitor = peripheral.wrap(
-    config.monitor
-)
+for name, role in pairs(config.displays) do
 
-if config.monitor then
-    monitor = peripheral.wrap(
-        config.monitor
-    )
+    if role == "mainscada" then
+
+        local m = peripheral.wrap(name)
+
+        if m then
+
+            table.insert(
+                monitors,
+                {
+                    name = name,
+                    object = m
+                }
+            )
+
+        end
+
+    end
+
 end
 
-if not monitor then
-    monitor = peripheral.find(
-        "monitor"
-    )
+
+if #monitors == 0 then
+
+    local fallback = peripheral.find("monitor")
+
+    if fallback then
+        table.insert(
+            monitors,
+            fallback
+        )
+    end
+
 end
 
-term.redirect(monitor)
-monitor.setTextScale(1)
-local mw, mh = monitor.getSize()
+
+if #monitors == 0 then
+    error("No SCADA monitors found")
+end
+
+
+for _,m in ipairs(monitors) do
+    m.object.setTextScale(1)
+end
+
+local mw, mh = monitors[1].object.getSize()
 
 local function progress(value, width)
 
@@ -51,10 +82,11 @@ local function progress(value, width)
 
 end
 
-
-local buttons = {}
-
 local function drawButton(x, y, w, text, color, enabled)
+
+    local side = peripheral.getName(term.current())
+
+    buttons[side] = buttons[side] or {}
 
     term.setCursorPos(x,y)
 
@@ -84,20 +116,17 @@ local function drawButton(x, y, w, text, color, enabled)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
 
-
-
-    buttons[#buttons+1] = {
-
-        x = x,
-        y = y,
-        w = w,
-        h = 1,
-
-        action = text,
-
-        enabled = enabled
-
+    table.insert(
+    buttons[side],
+    {
+        x=x,
+        y=y,
+        w=w,
+        h=1,
+        action=text,
+        enabled=enabled
     }
+)
 
 end
 
@@ -116,11 +145,11 @@ local function cardHandler()
         if reader.hasCard() then
 
             local key = reader.readCard()
-
-            if sha256(key) == config.cardKey then 
-                unlockPanel()
+            if key then 
+                if sha256(key) == config.cardKey then 
+                    unlockPanel()
+                end
             end
-
             -- reader.ejectCard()
 
             while reader.hasCard() do
@@ -139,56 +168,64 @@ local function touchHandler()
         local event, side, x, y =
             os.pullEvent("monitor_touch")
 
-        for _,button in ipairs(buttons) do
+        if side then
 
-            if button.enabled
+            if not buttons[side] then
+                buttons[side] = {}
+            end
+
+            for _, button in ipairs(buttons[side]) do
+
+                if button.enabled
                 and x >= button.x
                 and x <= button.x + button.w
                 and y == button.y then
 
-                if not panelLocked then
-                    if button.action == "START" then
 
-                        reactor:start()
+                    if not panelLocked then
 
-                    elseif button.action == "UNLOCK" then
+                        if button.action == "START" then
+                            reactor:start()
 
-                        reactor:resetAlarm()
+                        elseif button.action == "UNLOCK" then
+                            local data = reactor:getData()
+                            reactor:safetyCheck(data)
+                            reactor:resetAlarm()
 
-                    elseif button.action == "-" then
+                        elseif button.action == "STOP" then
+                            reactor:stop()
 
-                        reactor:changeBurnRate(-burnStep)
+                        elseif button.action == "+" then
+                            reactor:changeBurnRate(burnStep)
 
-                    elseif button.action == "STOP" then
+                        elseif button.action == "-" then
+                            reactor:changeBurnRate(-burnStep)
 
-                        reactor:stop()
+                        elseif button.action == "PIN LOCK" then
+                            lockPanel()
 
-                    elseif button.action == "PIN LOCK" then
-
-                        lockPanel()
-
-                    elseif button.action == "+" then
-
-                        reactor:changeBurnRate(burnStep)
-                    end
-
-                elseif panelLocked then
-
-                    if button.action == "CLR" then
-
-                        pinBuffer = ""
-
-                    elseif button.action == "OK" then
-                        if sha256(pinBuffer) == config.pin then
-                            unlockPanel()
-
-                        else
-                            pinBuffer = ""
                         end
 
-                    elseif tonumber(button.action) then
-                        if #pinBuffer < 8 then
-                            pinBuffer = pinBuffer .. button.action
+
+                    else
+
+                        if button.action == "CLR" then
+                            pinBuffer = ""
+
+                        elseif button.action == "OK" then
+
+                            if sha256(pinBuffer) == config.pin then
+                                unlockPanel()
+                            else
+                                pinBuffer = ""
+                            end
+
+                        elseif tonumber(button.action) then
+
+                            if #pinBuffer < 8 then
+                                pinBuffer = pinBuffer .. button.action
+                            end
+
                         end
 
                     end
@@ -245,195 +282,217 @@ local function drawOverlayLockpanel()
 end
 
 
-local function scadaLoop()
-    while true do
+local function drawSCADA()
+    local data = reactor:getData()
+    local side = peripheral.getName(term.current())
 
-        local data = reactor:getData()
-        
-        reactor:safetyCheck(data)
+    buttons[side] = {}
+    reactor:safetyCheck(data)
 
-        term.clear()
-        term.setCursorPos(1,1)
+    term.clear()
+    term.setCursorPos(1,1)
 
-        print("========== FISSION SCADA ==========")
+    print("========== FISSION SCADA ==========")
 
-        drawStatus(data)
+    drawStatus(data)
+
+    print()
+
+    print(string.format("Temperature : %7.1f C", data.temperature))
+    print(string.format("Damage      : %7.2f %%", data.damage))
+    print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
+
+    print()
+
+    print("Fuel")
+    progress(data.fuelPercent, 30)
+    print((" %5.1f%%"):format(data.fuelPercent * 100))
+
+    print("Waste")
+    progress(data.wastePercent, 30)
+    print((" %5.1f%%"):format(data.wastePercent * 100))
+
+    print("Coolant")
+    progress(data.coolantPercent, 30)
+    print((" %5.1f%%"):format(data.coolantPercent * 100))
+
+    print("Steam")
+    progress(data.heatedCoolantPercent, 30)
+    print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
+
+    print()
+
+    print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
+    print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
+    print(string.format("Size            : %dx%dx%d",
+        infoData.length,
+        infoData.width,
+        infoData.height))
+
+    if reactor.emergency then
 
         print()
 
-        print(string.format("Temperature : %7.1f C", data.temperature))
-        print(string.format("Damage      : %7.2f %%", data.damage))
-        print(string.format("Burn Rate   : %7.1f / %.1f", data.actualBurnRate, data.maxBurnRate))
+        term.setTextColor(colors.red)
 
-        print()
+        print("EMERGENCY")
+        print(reactor.alarm)
 
-        print("Fuel")
-        progress(data.fuelPercent, 30)
-        print((" %5.1f%%"):format(data.fuelPercent * 100))
+        term.setTextColor(colors.white)
 
-        print("Waste")
-        progress(data.wastePercent, 30)
-        print((" %5.1f%%"):format(data.wastePercent * 100))
+    end
 
-        print("Coolant")
-        progress(data.coolantPercent, 30)
-        print((" %5.1f%%"):format(data.coolantPercent * 100))
+    if panelLocked then
 
-        print("Steam")
-        progress(data.heatedCoolantPercent, 30)
-        print((" %5.1f%%"):format(data.heatedCoolantPercent * 100))
+        drawOverlayLockpanel()
 
-        print()
+        print(pinBuffer)
 
-        print(string.format("Fuel Assemblies : %d",infoData.fuelAssemblies))
-        print(string.format("Boil Efficiency : %.2f%%",infoData.boilEfficiency*100))
-        print(string.format("Size            : %dx%dx%d",
-            infoData.length,
-            infoData.width,
-            infoData.height))
+        local startX = math.floor((mw - 17) / 2) + 1
+        local startY = math.floor((mh - 7) / 2) + 1
 
+        drawButton(startX + 0,  startY + 0, 5, "1",   colors.gray, true)
+        drawButton(startX + 6,  startY + 0, 5, "2",   colors.gray, true)
+        drawButton(startX + 12, startY + 0, 5, "3",   colors.gray, true)
+
+        drawButton(startX + 0,  startY + 2, 5, "4",   colors.gray, true)
+        drawButton(startX + 6,  startY + 2, 5, "5",   colors.gray, true)
+        drawButton(startX + 12, startY + 2, 5, "6",   colors.gray, true)
+
+        drawButton(startX + 0,  startY + 4, 5, "7",   colors.gray, true)
+        drawButton(startX + 6,  startY + 4, 5, "8",   colors.gray, true)
+        drawButton(startX + 12, startY + 4, 5, "9",   colors.gray, true)
+
+        drawButton(startX + 0,  startY + 6, 5, "CLR", colors.red,   true)
+        drawButton(startX + 6,  startY + 6, 5, "0",   colors.gray,  true)
+        drawButton(startX + 12, startY + 6, 5, "OK",  colors.green, true)
+
+    else
+
+        drawButton(
+            30,
+            mh - 2,
+            10,
+            "PIN LOCK",
+            colors.orange,
+            true
+        )
         if reactor.emergency then
-
-            print()
-
-            term.setTextColor(colors.red)
-
-            print("EMERGENCY")
-            print(reactor.alarm)
-
-            term.setTextColor(colors.white)
-
-        end
-
-        buttons = {}
-
-        if panelLocked then
-
-            drawOverlayLockpanel()
-
-            print(pinBuffer)
-
-            local startX = math.floor((mw - 17) / 2) + 1
-            local startY = math.floor((mh - 7) / 2) + 1
-
-            drawButton(startX + 0,  startY + 0, 5, "1",   colors.gray, true)
-            drawButton(startX + 6,  startY + 0, 5, "2",   colors.gray, true)
-            drawButton(startX + 12, startY + 0, 5, "3",   colors.gray, true)
-
-            drawButton(startX + 0,  startY + 2, 5, "4",   colors.gray, true)
-            drawButton(startX + 6,  startY + 2, 5, "5",   colors.gray, true)
-            drawButton(startX + 12, startY + 2, 5, "6",   colors.gray, true)
-
-            drawButton(startX + 0,  startY + 4, 5, "7",   colors.gray, true)
-            drawButton(startX + 6,  startY + 4, 5, "8",   colors.gray, true)
-            drawButton(startX + 12, startY + 4, 5, "9",   colors.gray, true)
-
-            drawButton(startX + 0,  startY + 6, 5, "CLR", colors.red,   true)
-            drawButton(startX + 6,  startY + 6, 5, "0",   colors.gray,  true)
-            drawButton(startX + 12, startY + 6, 5, "OK",  colors.green, true)
-
-        else
 
             drawButton(
                 30,
+                6,
+                5,
+                "-",
+                colors.gray,
+                false
+            )
+
+            drawButton(
+                36,
+                6,
+                5,
+                "+",
+                colors.gray,
+                false
+            )
+
+            drawButton(
+                2,
                 mh - 2,
                 10,
-                "PIN LOCK",
-                colors.orange,
+                "START",
+                colors.gray,
+                false
+            )
+
+            drawButton(
+                15,
+                mh - 2,
+                10,
+                "UNLOCK",
+                colors.red,
                 true
             )
-            if reactor.emergency then
 
+
+        else
+            drawButton(
+                30,
+                6,
+                5,
+                "-",
+                colors.red,
+                true
+            )
+
+            drawButton(
+                36,
+                6,
+                5,
+                "+",
+                colors.green,
+                true
+            )
+
+            if data.status == "true" then
                 drawButton(
-                    30,
-                    6,
-                    5,
-                    "-",
-                    colors.gray,
-                    false
+                    2,
+                    mh - 2,
+                    10,
+                    "STOP",
+                    colors.red,
+                    true
                 )
-
-                drawButton(
-                    36,
-                    6,
-                    5,
-                    "+",
-                    colors.gray,
-                    false
-                )
-
+            else
                 drawButton(
                     2,
                     mh - 2,
                     10,
                     "START",
-                    colors.gray,
-                    false
-                )
-
-                drawButton(
-                    15,
-                    mh - 2,
-                    10,
-                    "UNLOCK",
-                    colors.red,
-                    true
-                )
-
-
-            else
-                drawButton(
-                    30,
-                    6,
-                    5,
-                    "-",
-                    colors.red,
-                    true
-                )
-
-                drawButton(
-                    36,
-                    6,
-                    5,
-                    "+",
                     colors.green,
                     true
                 )
-
-                if data.status == "true" then
-                    drawButton(
-                        2,
-                        mh - 2,
-                        10,
-                        "STOP",
-                        colors.red,
-                        true
-                    )
-                else
-                    drawButton(
-                        2,
-                        mh - 2,
-                        10,
-                        "START",
-                        colors.green,
-                        true
-                    )
-                end
-
-                drawButton(
-                    15,
-                    mh - 2,
-                    10,
-                    "UNLOCK",
-                    colors.gray,
-                    false
-                )
             end
+
+            drawButton(
+                15,
+                mh - 2,
+                10,
+                "UNLOCK",
+                colors.gray,
+                false
+            )
+        end
+    end
+
+    sleep(config.refreshRate)
+
+end
+
+
+local function scadaLoop()
+
+    while true do
+
+        for _,monitor in ipairs(monitors) do
+
+            currentMonitorSide = monitor.name
+
+            term.redirect(
+                monitor.object
+            )
+
+            drawSCADA(
+                monitor.name
+            )
+
         end
 
         sleep(config.refreshRate)
 
     end
+
 end
 
 parallel.waitForAny(

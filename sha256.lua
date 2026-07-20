@@ -186,6 +186,9 @@ end
 
 -- Made this global
 function sha256(msg)
+    if not msg then
+        return nil
+    end
     msg = preproc(msg, #msg)
     local H = initH256({})
     for i = 1, #msg, 64 do digestblock(msg, i, H) end
